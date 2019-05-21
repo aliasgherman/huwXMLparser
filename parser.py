@@ -1,6 +1,10 @@
 import pandas as pd
 from lxml import etree
 from collections import OrderedDict
+from pymongo import MongoClient
+import os
+import gzip
+from datetime import datetime
 
 #import xml.etree.ElementTree as ET
 
@@ -143,6 +147,13 @@ def export_autobackup_data(root, exportdir, logger, vendor=VENDOR_HUW, filetype=
     #    else:
     #        print(i.text)
     NEVERSION = getneversion(root)
+    NENAME = get_ne_name(root, logger)
+    NEDATE = get_ne_datetime(root, logger)
+    tempDate = datetime.now()
+    tempDateFilter = "{:04d}-{:02d}-{:02d}".format(tempDate.year, tempDate.month, tempDate.day)
+    if NEDATE.find(tempDateFilter) == -1: #if this dump is not from today then dont process it
+        logger.info("Not processing this dump as datefilter not matched (filter = " + tempDateFilter)
+        return
     for child in root:
         #print(child.tag, " ==== " , child.attrib , " |||| \n")
         for grandchild in child:
@@ -168,25 +179,115 @@ def export_autobackup_data(root, exportdir, logger, vendor=VENDOR_HUW, filetype=
                     #print(paramList)
                 if (len(paramTab) > 0):
                     df = pd.DataFrame(paramTab)
+                    df['NENAME_AAM'] = NENAME
                     df['MONAME'] = currClass
                     df['VERSION'] = NEVERSION[0]
                     df['TECHNIQUE'] = NEVERSION[1]
                     df['BTSTYPE'] = NEVERSION[2]
+                    df['AAMDATE'] = NEDATE
+                    CUSTOM_COL_COUNT = 6
+                    
+                    cols = df.columns.tolist() #we want to move the custom added 5 columns to the beginning of the frame
+                    
+                    cols = cols[-CUSTOM_COL_COUNT:] + cols[:-CUSTOM_COL_COUNT]
+                    df = df[cols]
+                    
                     if (len(df) > 0):
-                        df.to_csv(exportdir + currClass + ".csv", index=False) #use os to properly join the filenames for any OS
+                        #df.to_csv(exportdir + currClass + ".csv", index=False) #use os to properly join the filenames for any OS
+                        df_to_mongo(NEVERSION[2], currClass, df, logger)
                     else:
                         print("0 length class not exported.", currClass)
 
+def get_ne_name(root, logger):
+    retText = "UNKNOWN_NENAME"
+    for temp in root.iter():
+        if isinstance(temp, etree._Comment) == False:
+            #print(normalize(temp.tag), temp.attrib)
+            if normalize(temp.tag) == "NE":
+                #print(temp.tag, temp.attrib, temp.text)
+                for b in temp.getchildren():
+                    if normalize(b.tag).lower() == "attributes":
+                        for c in b.getchildren():
+                            if normalize(c.tag) == "NENAME":
+                                retText = c.text
+    if (retText == "UNKNOWN_NENEAME"):
+        logger.error("NENAME not found in the file while processing.")
+    else:
+        logger.info("NENAME found for this file is " + retText)
+    return retText
+
+def get_ne_datetime(root, logger):
+    retText = "UNKNOWN_EXPORT_DATE"
+    for temp in root.iter():
+        if isinstance(temp, etree._Comment) == False:
+            if normalize(temp.tag).lower().find("footer") > -1:
+                retText = temp.attrib['dateTime']
+    if (retText == "UNKNOWN_EXPORT_DATE"):
+        logger.error("NE Export date not found in the file while processing.")
+    else:
+        logger.info("NE Date found for this file is " + retText)
+    return retText
 
 def main(logger):
-    tree1 = etree.parse(file3)
-    root1 = tree1.getroot()
-    print(getFileType(root1))
-    print(getneversion(root1))
-    export_all_tables(root=root1, exportdir="/home/aamhabiby/Desktop/resources/", 
-                      logger=logger)
-    
+    MAIN_DIR = "E:\\AAM\\TEST\\"
+    gunzip_all(MAIN_DIR, logger) #first gunzip all the gz files in all directories.
+    for f in getListOfFiles(MAIN_DIR, logger, "cfg", ".xml"):
+        tree1 = etree.parse(f)
+        root1 = tree1.getroot()
+        print(getFileType(root1))
+        print(getneversion(root1))
+        export_all_tables(root=root1, exportdir="/home/aamhabiby/Desktop/resources/", 
+                          logger=logger)
 
+def un_gzip(filename, logger):
+    try:
+        input = gzip.GzipFile(filename, 'rb')
+        s = input.read()
+        input.close()
+        output = open(filename[:-3], 'wb')
+        output.write(s)
+        output.close()
+        logger.info("Extracted a gz file " + filename)
+    except Exception as e:
+        logger.info("Failure in gzip extraction of " + filename)        
+        
+def df_to_mongo(dbname, collname, df, logger, host="localhost", port=27017):
+    try:
+        client = MongoClient(host, port)
+        db = client[dbname]
+        collection = db[collname]
+        data = df.to_dict(orient='records')
+        collection.insert_many(data)
+    except Exception as e:
+        logger.error("Exception occurred inserting data to Mongo db")
+        logger.error(e)
+
+def gunzip_all(dirName, logger):
+    tempDate = datetime.now()
+    tempDateFilter = "{:04d}-{:02d}-{:02d}".format(tempDate.year, tempDate.month, tempDate.day)    
+    for files in getListOfFiles(dirName=dirName, logger=logger, filefilter=tempDateFilter, extension=".gz"):
+        un_gzip(files, logger)
+
+def getListOfFiles(dirName, logger, filefilter = "", extension = ".xml"):
+    # create a list of file and sub directories 
+    # names in the given directory 
+    listOfFile = os.listdir(dirName)
+    allFiles = list()
+    # Iterate over all the entries
+    for entry in listOfFile:
+        # Create full path
+        fullPath = os.path.join(dirName, entry)
+        # If entry is a directory then get the list of files in this directory 
+        if os.path.isdir(fullPath):
+            allFiles = allFiles + getListOfFiles(fullPath, logger, filefilter, extension)
+        else:
+            if filefilter != "":
+                if (fullPath.lower().find(filefilter.lower()) > -1) and (fullPath[-len(extension):].lower() == extension.lower()):
+                    allFiles.append(fullPath)
+                
+    return allFiles
+        
+        
 if __name__ == "__main__":
     ##########################################################
     import logging
@@ -196,10 +297,10 @@ if __name__ == "__main__":
     myLogger = logging.getLogger(LOG_TAG)
     myLogger.setLevel(logging.DEBUG)
 
-    fh = logging.handlers.RotatingFileHandler(LOG_TAG + ".log", 'a', maxBytes=10*1024*1024, backupCount=20)
-    fh.setLevel(logging.INFO)
+    fh = RotatingFileHandler(LOG_TAG + ".log", 'a', maxBytes=10*1024*1024, backupCount=20)
+    fh.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
+    ch.setLevel(logging.DEBUG)
     formatter = logging.Formatter('[ %(asctime)s ] [ %(name)s ][ %(levelname)s ] %(message)s')
 
     ch.setFormatter(formatter)
