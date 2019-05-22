@@ -157,7 +157,7 @@ def export_autobackup_data(root, exportdir, logger, vendor=VENDOR_HUW, filetype=
     for child in root:
         #print(child.tag, " ==== " , child.attrib , " |||| \n")
         for grandchild in child:
-            logger.info(normalize(grandchild.tag) + " = " + str(grandchild.attrib))
+            #logger.info(normalize(grandchild.tag) + " = " + str(grandchild.attrib))
             if (normalize(grandchild.tag).lower()) == 'class':
                 paramTab = [] #this will hold all parameters under this class MO
                 for a in grandchild.getchildren():
@@ -175,7 +175,7 @@ def export_autobackup_data(root, exportdir, logger, vendor=VENDOR_HUW, filetype=
                                     paramList[normalize(c.tag)] = c.text
                                     #print(normalize(currClass), normalize(c.tag), " = " , c.text)
                             paramTab.append(paramList)
-                            print("Appending here", paramList, currClass)
+                            #print("Appending here", paramList, currClass)
                     #print(paramList)
                 if (len(paramTab) > 0):
                     df = pd.DataFrame(paramTab)
@@ -193,10 +193,11 @@ def export_autobackup_data(root, exportdir, logger, vendor=VENDOR_HUW, filetype=
                     df = df[cols]
                     
                     if (len(df) > 0):
-                        #df.to_csv(exportdir + currClass + ".csv", index=False) #use os to properly join the filenames for any OS
+                        df.to_csv(exportdir + currClass + ".csv", index=False, mode='a') #use os to properly join the filenames for any OS
                         df_to_mongo(NEVERSION[2], currClass, df, logger)
                     else:
-                        print("0 length class not exported.", currClass)
+                        pass
+                        #print("0 length class not exported.", currClass)
 
 def get_ne_name(root, logger):
     retText = "UNKNOWN_NENAME"
@@ -234,9 +235,10 @@ def main(logger):
     for f in getListOfFiles(MAIN_DIR, logger, "cfg", ".xml"):
         tree1 = etree.parse(f)
         root1 = tree1.getroot()
-        print(getFileType(root1))
-        print(getneversion(root1))
-        export_all_tables(root=root1, exportdir="/home/aamhabiby/Desktop/resources/", 
+        #print(getFileType(root1))
+        #print(getneversion(root1))
+        logger.info("Starting File " + f)
+        export_all_tables(root=root1, exportdir="E:\\AAM\\", 
                           logger=logger)
 
 def un_gzip(filename, logger):
@@ -264,7 +266,8 @@ def df_to_mongo(dbname, collname, df, logger, host="localhost", port=27017):
 
 def gunzip_all(dirName, logger):
     tempDate = datetime.now()
-    tempDateFilter = "{:04d}-{:02d}-{:02d}".format(tempDate.year, tempDate.month, tempDate.day)    
+    tempDateFilter = "{:04d}{:02d}{:02d}".format(tempDate.year, tempDate.month, tempDate.day) #this is to only extract the CFG xml files inside today's AUTOBAK folder
+    logger.info("The template for gunzip will be " + tempDateFilter)
     for files in getListOfFiles(dirName=dirName, logger=logger, filefilter=tempDateFilter, extension=".gz"):
         un_gzip(files, logger)
 
