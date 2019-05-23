@@ -19,7 +19,10 @@ FILETYPE_UNKNOWN = -1
 FILETYPE_AUTOEXPORT = 2
 FILETYPE_AUTOBACKUP = 3
 FILETYPE_GEXPORT = 1
-    
+NENAME_UNKNOWN = -1
+EXPORTDATE_UNKNOWN = -1
+
+
 def getFileType(root, vendor=VENDOR_HUW, filetype=FILETYPE_XML):
     #currently we know of two types of XML files
     #one is usually in GExport folder and used by PRS to get cell data
@@ -149,6 +152,10 @@ def export_autobackup_data(root, exportdir, logger, vendor=VENDOR_HUW, filetype=
     NEVERSION = getneversion(root)
     NENAME = get_ne_name(root, logger)
     NEDATE = get_ne_datetime(root, logger)
+    if (NENAME == NENAME_UNKNOWN) or (NEDATE == EXPORTDATE_UNKNOWN):
+        logger.error("NENAME or NEDATE is unknown (NENAME, NEDATE) = (" + str(NENAME) + ", " + str(NEDATE) + ")")
+        return
+		
     tempDate = datetime.now()
     tempDateFilter = "{:04d}-{:02d}-{:02d}".format(tempDate.year, tempDate.month, tempDate.day)
     if NEDATE.find(tempDateFilter) == -1: #if this dump is not from today then dont process it
@@ -193,14 +200,14 @@ def export_autobackup_data(root, exportdir, logger, vendor=VENDOR_HUW, filetype=
                     df = df[cols]
                     
                     if (len(df) > 0):
-                        df.to_csv(exportdir + currClass + ".csv", index=False, mode='a') #use os to properly join the filenames for any OS
+                        #df.to_csv(exportdir + currClass + ".csv", index=False, mode='a') #use os to properly join the filenames for any OS
                         df_to_mongo(NEVERSION[2], currClass, df, logger)
                     else:
                         pass
                         #print("0 length class not exported.", currClass)
 
 def get_ne_name(root, logger):
-    retText = "UNKNOWN_NENAME"
+    retText = NENAME_UNKNOWN
     for temp in root.iter():
         if isinstance(temp, etree._Comment) == False:
             #print(normalize(temp.tag), temp.attrib)
@@ -211,19 +218,19 @@ def get_ne_name(root, logger):
                         for c in b.getchildren():
                             if normalize(c.tag) == "NENAME":
                                 retText = c.text
-    if (retText == "UNKNOWN_NENEAME"):
+    if (retText == NENAME_UNKNOWN):
         logger.error("NENAME not found in the file while processing.")
     else:
         logger.info("NENAME found for this file is " + retText)
     return retText
 
 def get_ne_datetime(root, logger):
-    retText = "UNKNOWN_EXPORT_DATE"
+    retText = EXPORTDATE_UNKNOWN
     for temp in root.iter():
         if isinstance(temp, etree._Comment) == False:
             if normalize(temp.tag).lower().find("footer") > -1:
                 retText = temp.attrib['dateTime']
-    if (retText == "UNKNOWN_EXPORT_DATE"):
+    if (retText == EXPORTDATE_UNKNOWN):
         logger.error("NE Export date not found in the file while processing.")
     else:
         logger.info("NE Date found for this file is " + retText)
