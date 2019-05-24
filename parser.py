@@ -1,7 +1,11 @@
-
-DUMPDIR = "/media/windows/AAM/windows/NSN SA/Macros/CFGMMLProject/XMLFiles/AUTOBAKDATA20190517030456/"
-EXPORT_DIR = "/media/windows/AAM/windows/NSN SA/Macros/CFGMMLProject/XMLFiles/AUTOBAKDATA20190517030456/"
+DUMPDIR = "/home/aamhabiby/Desktop/resources/TEST/"
+EXPORT_DIR = "/home/aamhabiby/Desktop/resources/TEST/"
 CONSIDER_DATEFILTERS = False
+
+#DUMPDIR = "E:\\AAM\\TEST"
+#EXPORT_DIR = "E:\\AAM\\TEST"
+#CONSIDER_DATEFILTERS = False
+
 
 import pandas as pd
 from lxml import etree
@@ -10,6 +14,7 @@ from pymongo import MongoClient
 import os
 import gzip
 from datetime import datetime
+#import json
 
 VENDOR_HUW = "HUW"
 FILETYPE_XML = "xml"
@@ -20,6 +25,7 @@ FILETYPE_GEXPORT = 1
 NENAME_UNKNOWN = -1
 EXPORTDATE_UNKNOWN = -1
 NEVERSION_UNKOWN = [-1, -1, -1]
+NES_TO_IGNORE = ['DBS3900'] #we will not process these NEs as well (Like DCU etc.)
 
 def getFileType(root, logger, vendor=VENDOR_HUW, filetype=FILETYPE_XML):
     #currently we know of two types of XML files
@@ -80,7 +86,7 @@ def getneversion(root, logger, vendor=VENDOR_HUW, filetype=FILETYPE_XML):
                     assert a.tag.lower() == 'fileHeader'.lower()
                     for strVal in a.attrib.values():
                         ret_type = strVal.split(" ")[0]
-                        ret_version = strVal.split(" ")[1]
+                        ret_version = strVal[len(ret_type) + 1:] #include everything after first word
                         break
                     return [ret_version, ret_technique, ret_type]
         elif (ftype == FILETYPE_AUTOBACKUP):
@@ -94,7 +100,8 @@ def getneversion(root, logger, vendor=VENDOR_HUW, filetype=FILETYPE_XML):
                         if a_ch.lower().find('neversion') > -1:
                             strVal = a.attrib[a_ch]
                             ret_type = strVal.split(" ")[0]
-                            ret_version = strVal.split(" ")[1]
+                            #ret_version = strVal.split(" ")[1]
+                            ret_version = strVal[len(ret_type) + 1:] #include everything after first word
                             return [ret_version, ret_technique, ret_type]
         else:
             logger.info("The file type is not in the decision tree. Returning unknown NE version. " + ftype)
@@ -119,8 +126,7 @@ def export_all_tables(root, exportdir, logger, vendor=VENDOR_HUW, filetype=FILET
             startRoot = root
 
         elif getFileType(root, logger, vendor=VENDOR_HUW, filetype=FILETYPE_XML) == FILETYPE_AUTOBACKUP:
-            export_autobackup_data(root=root, exportdir=exportdir, logger=logger, 
-                                   considerdateFilter=CONSIDER_DATEFILTERS, vendor=VENDOR_HUW, filetype=FILETYPE_XML)
+            export_autobackup_data(root=root, exportdir=exportdir, logger=logger,considerdateFilter=CONSIDER_DATEFILTERS, vendor=VENDOR_HUW, filetype=FILETYPE_XML)
             return
 
         for it in startRoot.iter():
@@ -143,7 +149,7 @@ def export_all_tables(root, exportdir, logger, vendor=VENDOR_HUW, filetype=FILET
                 df['TECHNIQUE'] = temp[1]
                 df['BTSTYPE'] = temp[2]
                 if (len(df) > 0):
-                    df.to_csv(exportdir + currClass + ".csv", index=False) #use os to properly join the filenames for any OS
+                    df.to_csv(os.path.join(exportdir,currClass + ".csv"), index=False) #use os to properly join the filenames for any OS
                 else:
                     logger.info("0 length class not exported." + str(currClass))
     except Exception as e:
@@ -166,8 +172,12 @@ def export_autobackup_data(root, exportdir, logger, considerdateFilter=True,
     #        print(i.text)
     try:
         NEVERSION = getneversion(root, logger)
+        #logger.info("NEVERSION = " + str(NEVERSION))
         if (NEVERSION == NEVERSION_UNKOWN):
             logger.info("NEVERSION is unknown so not processing this dump. ")
+            return
+        elif (NEVERSION[2] in NES_TO_IGNORE): #we dont want to process these NEs
+            logger.info("Ignoring this NE as BTSTYPE is in ignore list. (" + str(NEVERSION[2]) + ")")
             return
         NENAME = get_ne_name(root, logger)
         NEDATE = get_ne_datetime(root, logger)
@@ -218,7 +228,7 @@ def export_autobackup_data(root, exportdir, logger, considerdateFilter=True,
                         cols = cols[-CUSTOM_COL_COUNT:] + cols[:-CUSTOM_COL_COUNT]
                         df = df[cols]
                         if (len(df) > 0):
-                            #df.to_csv(exportdir + currClass + ".csv", index=False, mode='a') #use os to properly join the filenames for any OS
+                            #df.to_csv(os.path.join(exportdir, currClass + ".csv"), index=False, mode='a') #use os to properly join the filenames for any OS
                             df_to_mongo(NEVERSION[2], currClass, df, logger)
                         else:
                             pass
@@ -257,9 +267,14 @@ def get_ne_datetime(root, logger):
     return retText
 
 def main(logger):
+    tempDate = datetime.now()
+    tempDateFilter = "{:04d}{:02d}{:02d}".format(tempDate.year, tempDate.month, tempDate.day) #this is to only extract the CFG xml files inside today's AUTOBAK folder    
     MAIN_DIR = DUMPDIR
-    gunzip_all(MAIN_DIR, logger) #first gunzip all the gz files in all directories.
-    for f in getListOfFiles(MAIN_DIR, logger, "cfg", ".xml"):
+    if CONSIDER_DATEFILTERS == False: #only for testing in order to add any xml file regardless of the date
+        tempDateFilter = ""
+    gunzip_all(MAIN_DIR, logger, dirFilter=tempDateFilter, fileFilter="cfg",
+              extensionFilter=".gz") #first gunzip all the gz files in all directories.
+    for f in getListOfFiles(MAIN_DIR, logger, dirFilter=tempDateFilter, fileFilter="cfg", extensionFilter=".xml"):
         tree1 = etree.parse(f)
         root1 = tree1.getroot()
         #print(getFileType(root1))
@@ -291,17 +306,18 @@ def df_to_mongo(dbname, collname, df, logger, host="localhost", port=27017):
     except Exception as e:
         logger.error("Exception occurred inserting data to Mongo db" + str(e))
 
-def gunzip_all(dirName, logger):
+def gunzip_all(dirName, logger, dirFilter, fileFilter, extensionFilter):
     try:
         tempDate = datetime.now()
         tempDateFilter = "{:04d}{:02d}{:02d}".format(tempDate.year, tempDate.month, tempDate.day) #this is to only extract the CFG xml files inside today's AUTOBAK folder
         logger.info("The template for gunzip will be " + tempDateFilter)
-        for files in getListOfFiles(dirName=dirName, logger=logger, filefilter=tempDateFilter, extension=".gz"):
+        for files in getListOfFiles(dirName=dirName, logger=logger, dirFilter=dirFilter,
+                                    fileFilter=fileFilter, extensionFilter = extensionFilter):
             un_gzip(files, logger)
     except Exception as e:
         logger.error("Exception occurred in gunzip_all function." + str(e))
 
-def getListOfFiles(dirName, logger, filefilter = "", extension = ".xml"):
+def getListOfFiles(dirName, logger, dirFilter = "", fileFilter = "", extensionFilter = ".xml"):
     # create a list of file and sub directories 
     # names in the given directory 
     listOfFile = os.listdir(dirName)
@@ -312,12 +328,32 @@ def getListOfFiles(dirName, logger, filefilter = "", extension = ".xml"):
         fullPath = os.path.join(dirName, entry)
         # If entry is a directory then get the list of files in this directory 
         if os.path.isdir(fullPath):
-            allFiles = allFiles + getListOfFiles(fullPath, logger, filefilter, extension)
+            allFiles = allFiles + getListOfFiles(fullPath, logger, dirFilter, fileFilter, extensionFilter)
         else:
-            if filefilter != "":
-                if (fullPath.lower().find(filefilter.lower()) > -1) and (fullPath[-len(extension):].lower() == extension.lower()):
-                    allFiles.append(fullPath)
+        # We will check for three conditions
+        # filename contains filefilter
+        # file extension matches the extension provided
+        # directory contains the directory filter
+            pathName, fileName = os.path.split(fullPath)
+            selecFilter = 0
+            if fileFilter != "":
+                if (fileName.lower().find(fileFilter.lower()) > -1):
+                    selecFilter = selecFilter + 1
+            else:
+                selecFilter = selecFilter + 1
+            if dirFilter != "":
+                if (pathName.lower().find(dirFilter.lower()) > -1):
+                    selecFilter = selecFilter + 1
+            else:
+                selecFilter = selecFilter + 1
+            if extensionFilter != "":
+                if (fileName[-len(extensionFilter):].lower() == extensionFilter.lower()):
+                    selecFilter = selecFilter + 1
+            else:
+                selecFilter = selecFilter + 1
                 
+            if selecFilter == 3: # All three conditions met (or were not required)
+                allFiles.append(fullPath)
     return allFiles
         
         
