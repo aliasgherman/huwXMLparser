@@ -1,10 +1,14 @@
 DUMPDIR = "/home/aamhabiby/Desktop/resources/TEST/"
-EXPORT_DIR = "/home/aamhabiby/Desktop/resources/TEST/"
+EXPORT_DIR = "/home/aamhabiby/Desktop/resources/"
 CONSIDER_DATEFILTERS = False
-
+EXPORT_CSV = True
+INSERT_MONGO = False
+CUSTOM_DATE_FILTER_FILE = "2019-05-22"
+CUSTOM_DATE_FILTER_DIR = "20190522"
 #DUMPDIR = "E:\\AAM\\TEST"
 #EXPORT_DIR = "E:\\AAM\\TEST"
 #CONSIDER_DATEFILTERS = False
+
 
 
 import pandas as pd
@@ -149,7 +153,15 @@ def export_all_tables(root, exportdir, logger, vendor=VENDOR_HUW, filetype=FILET
                 df['TECHNIQUE'] = temp[1]
                 df['BTSTYPE'] = temp[2]
                 if (len(df) > 0):
-                    df.to_csv(os.path.join(exportdir,currClass + ".csv"), index=False) #use os to properly join the filenames for any OS
+                    if EXPORT_CSV == True:
+                        newFileName = os.path.join(exportdir, temp[2], currClass + ".csv")
+                        if os.path.isfile(newFileName):
+                            df.to_csv(newFileName, index=False, header=False, mode="a")
+                        else:
+                            newDir = os.path.join(exportdir, temp[2])
+                            if not os.path.exists(newDir):
+                                os.mkdir(newDir)
+                            df.to_csv(newFileName, index=False) #use os to properly join the filenames for any OS
                 else:
                     logger.info("0 length class not exported." + str(currClass))
     except Exception as e:
@@ -190,6 +202,9 @@ def export_autobackup_data(root, exportdir, logger, considerdateFilter=True,
         if (NEDATE.find(tempDateFilter) == -1) and (considerdateFilter == True): #if this dump is not from today then dont process it
             logger.info("Not processing this dump as datefilter not matched (filter = " + tempDateFilter)
             return
+        elif considerdateFilter == False:
+            tempDateFilter = CUSTOM_DATE_FILTER_FILE
+            
         for child in root:
             #print(child.tag, " ==== " , child.attrib , " |||| \n")
             for grandchild in child:
@@ -228,8 +243,17 @@ def export_autobackup_data(root, exportdir, logger, considerdateFilter=True,
                         cols = cols[-CUSTOM_COL_COUNT:] + cols[:-CUSTOM_COL_COUNT]
                         df = df[cols]
                         if (len(df) > 0):
-                            #df.to_csv(os.path.join(exportdir, currClass + ".csv"), index=False, mode='a') #use os to properly join the filenames for any OS
-                            df_to_mongo(NEVERSION[2], currClass, df, logger)
+                            if (EXPORT_CSV == True):
+                                newFileName = os.path.join(exportdir, NEVERSION[2], currClass + ".csv")
+                                if os.path.isfile(newFileName):
+                                    df.to_csv(newFileName, index=False, header=False, mode='a') #use os to properly join the filenames for any OS
+                                else:
+                                    newDir = os.path.join(exportdir, NEVERSION[2])
+                                    if not os.path.exists(newDir):
+                                        os.mkdir(newDir)
+                                    df.to_csv(newFileName, index=False) #use os to properly join the filenames for any OS
+                            if (INSERT_MONGO == True):
+                                df_to_mongo(NEVERSION[2], currClass, df, logger)
                         else:
                             pass
                             #print("0 length class not exported.", currClass)
@@ -271,10 +295,12 @@ def main(logger):
     tempDateFilter = "{:04d}{:02d}{:02d}".format(tempDate.year, tempDate.month, tempDate.day) #this is to only extract the CFG xml files inside today's AUTOBAK folder    
     MAIN_DIR = DUMPDIR
     if CONSIDER_DATEFILTERS == False: #only for testing in order to add any xml file regardless of the date
-        tempDateFilter = ""
+        tempDateFilter = CUSTOM_DATE_FILTER_DIR
     gunzip_all(MAIN_DIR, logger, dirFilter=tempDateFilter, fileFilter="cfg",
               extensionFilter=".gz") #first gunzip all the gz files in all directories.
-    for f in getListOfFiles(MAIN_DIR, logger, dirFilter=tempDateFilter, fileFilter="cfg", extensionFilter=".xml"):
+    totFiles = getListOfFiles(MAIN_DIR, logger, dirFilter=tempDateFilter, fileFilter="cfg", extensionFilter=".xml")
+    logger.info("Total files to be processed are : " + str(len(totFiles)))
+    for f in totFiles:
         tree1 = etree.parse(f)
         root1 = tree1.getroot()
         #print(getFileType(root1))
