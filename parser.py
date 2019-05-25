@@ -10,7 +10,6 @@ CUSTOM_DATE_FILTER_DIR = "20190522"
 #CONSIDER_DATEFILTERS = False
 
 
-
 import pandas as pd
 from lxml import etree
 from collections import OrderedDict
@@ -154,13 +153,13 @@ def export_all_tables(root, exportdir, logger, vendor=VENDOR_HUW, filetype=FILET
                 df['BTSTYPE'] = temp[2]
                 if (len(df) > 0):
                     if EXPORT_CSV == True:
-                        newFileName = os.path.join(exportdir, temp[2], currClass + ".csv")
+                        newDir = os.path.join(exportdir, temp[2], temp[0])
+                        newFileName = os.path.join(newDir, currClass + ".csv")
                         if os.path.isfile(newFileName):
                             df.to_csv(newFileName, index=False, header=False, mode="a")
                         else:
-                            newDir = os.path.join(exportdir, temp[2])
                             if not os.path.exists(newDir):
-                                os.mkdir(newDir)
+                                os.makedirs(newDir)
                             df.to_csv(newFileName, index=False) #use os to properly join the filenames for any OS
                 else:
                     logger.info("0 length class not exported." + str(currClass))
@@ -244,13 +243,13 @@ def export_autobackup_data(root, exportdir, logger, considerdateFilter=True,
                         df = df[cols]
                         if (len(df) > 0):
                             if (EXPORT_CSV == True):
-                                newFileName = os.path.join(exportdir, NEVERSION[2], currClass + ".csv")
+                                newDir = os.path.join(exportdir, NEVERSION[2], NEVERSION[0])
+                                newFileName = os.path.join(newDir, currClass + ".csv")
                                 if os.path.isfile(newFileName):
                                     df.to_csv(newFileName, index=False, header=False, mode='a') #use os to properly join the filenames for any OS
                                 else:
-                                    newDir = os.path.join(exportdir, NEVERSION[2])
                                     if not os.path.exists(newDir):
-                                        os.mkdir(newDir)
+                                        os.makedirs(newDir)
                                     df.to_csv(newFileName, index=False) #use os to properly join the filenames for any OS
                             if (INSERT_MONGO == True):
                                 df_to_mongo(NEVERSION[2], currClass, df, logger)
