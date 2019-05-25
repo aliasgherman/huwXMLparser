@@ -1,3 +1,9 @@
+from exportToExcel import *
+from parser import *
+
+DATE_TO_PROCESS = "20190522"
+DATE_TO_PROCESS_DIR = "2019-05-22"
+
 if __name__ == "__main__":
     ##########################################################
     import logging
@@ -21,5 +27,17 @@ if __name__ == "__main__":
     myLogger.addHandler(fh)
     ##########################################################
 
-    parser =
+    parser = ParserXML(logger=myLogger, CONSIDER_DATEFILTERS=False, CUSTOM_DATE_FILTER_FILE=DATE_TO_PROCESS_DIR,
+                       CUSTOM_DATE_FILTER_DIR=DATE_TO_PROCESS,
+                       EXPORT_CSV=False,
+                       INSERT_MONGO=True,
+                       DUMPDIR="/home/aamhabiby/Desktop/resources/SMALLSET/",
+                       EXPORT_DIR="/home/aamhabiby/Desktop/resources/")
+    parser.run()
+
+    exporter = MongoToExcel(logger=myLogger, DBNAME="BTS3900", EXPORT_PATH="/home/aamhabiby/Desktop/resources/",
+                            TABLES_NEEDED=["NE"], DATE_COLUMN="AAMDATE", EXPORT_ALL_DATES=False,
+                            COLUMNS_TO_DROP=['_id'], TABLE_FOR_MAXDATE="NE")
+    exporter.run()
+
     fh.close()

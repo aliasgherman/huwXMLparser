@@ -315,7 +315,7 @@ class ParserXML:
             self.logger.info("NE Date found for this file is " + retText)
         return retText
 
-    def test(self):
+    def run(self):
         tempDate = datetime.now()
         tempDateFilter = "{:04d}{:02d}{:02d}".format(tempDate.year, tempDate.month,
                                                      tempDate.day)  # this is to only extract the CFG xml files inside today's AUTOBAK folder
@@ -408,36 +408,3 @@ class ParserXML:
                 if selecFilter == 3:  # All three conditions met (or were not required)
                     allFiles.append(fullPath)
         return allFiles
-        
-        
-if __name__ == "__main__":
-    ##########################################################
-    import logging
-    from logging.handlers import RotatingFileHandler
-
-    LOG_TAG = 'HUW_XML_PARSER'
-
-    myLogger = logging.getLogger(LOG_TAG)
-    myLogger.setLevel(logging.DEBUG)
-
-    fh = RotatingFileHandler(LOG_TAG + ".log", 'a', maxBytes=10 * 1024 * 1024, backupCount=20)
-    fh.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('[ %(asctime)s ] [ %(name)s ][ %(levelname)s ] %(message)s')
-
-    ch.setFormatter(formatter)
-    fh.setFormatter(formatter)
-
-    myLogger.addHandler(ch)
-    myLogger.addHandler(fh)
-    ##########################################################
-
-    parser = ParserXML(logger=myLogger, CONSIDER_DATEFILTERS=False, CUSTOM_DATE_FILTER_FILE="2019-05-22",
-                       CUSTOM_DATE_FILTER_DIR="20190522",
-                       EXPORT_CSV=False,
-                       INSERT_MONGO=True,
-                       DUMPDIR="/home/aamhabiby/Desktop/resources/SMALLSET/",
-                       EXPORT_DIR="/home/aamhabiby/Desktop/resources/")
-    parser.test()
-    fh.close()
