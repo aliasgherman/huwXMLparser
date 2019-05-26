@@ -162,7 +162,7 @@ class ParserXML:
                         paramDict = dict()
                         for params in obj.getchildren():
                             # print(params.tag, params.attrib)
-                            paramDict[params.attrib['name']] = params.attrib['value']
+                            paramDict[params.attrib['name'].upper()] = params.attrib['value']
                         currTab.append(paramDict)
 
                     df = pd.DataFrame()
@@ -244,7 +244,7 @@ class ParserXML:
                                                 currPair = paramList.popitem()
                                                 paramList[self.normalize(currPair[0])] = c.text.strip()
                                         else:
-                                            paramList[self.normalize(c.tag)] = c.text
+                                            paramList[self.normalize(c.tag).upper()] = c.text
                                             # print(normalize(currClass), normalize(c.tag), " = " , c.text)
                                     paramTab.append(paramList)
                                     # print("Appending here", paramList, currClass)

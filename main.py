@@ -1,3 +1,4 @@
+from downloadAutobak import *
 from exportToExcel import *
 from parser import *
 
@@ -7,6 +8,7 @@ HOST_LIST = [["10.200.163.7", "ftpuser", "Vod_ftp_2015"],
              ["10.200.163.230", "ftpuser", "Changeme_123"]]
 
 LOCALFOLDER = "/home/aamhabiby/Desktop/resources/SMALLSET"
+EXPORT_PATH = "/home/aamhabiby/Desktop/resources/"
 # REMOTEFOLDER = "/ftproot/"
 FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900", "DBS3900 IBS", "MICRO BTS3900"]
 
@@ -41,8 +43,8 @@ if __name__ == "__main__":
     ##########################################################
     # Step 1 : Download autobakup files
     ##########################################################
-    # downloader = XMLDownloader(myLogger)
-    # downloader.run(HOST_LIST=HOST_LIST, FOL_LIST=FOL_LIST, LOCALFOLDER=LOCALFOLDER, type=downloader.AUTOBAK)
+    downloader = XMLDownloader(myLogger)
+    downloader.run(HOST_LIST=HOST_LIST, FOL_LIST=FOL_LIST, LOCALFOLDER=LOCALFOLDER, type=downloader.AUTOBAK)
 
     ##########################################################
     # Step 2 : Parse the downloaded XML files : Optional this
@@ -50,7 +52,7 @@ if __name__ == "__main__":
     ##########################################################
     parser = ParserXML(logger=myLogger, CUSTOM_DATE_FILTER=DATE_TO_PROCESS,
                        EXPORT_CSV=True,
-                       INSERT_MONGO=False,
+                       INSERT_MONGO=True,
                        DUMPDIR=LOCALFOLDER,
                        EXPORT_DIR=LOCALFOLDER)
     parser.run()
@@ -59,9 +61,12 @@ if __name__ == "__main__":
     # inserted in mongo in step 2
     ##########################################################
 
-    exporter = MongoToExcel(logger=myLogger, DBNAME="BTS3900", EXPORT_PATH="/home/aamhabiby/Desktop/resources/",
+    exporter = MongoToExcel(logger=myLogger, DBNAME="BTS3900", EXPORT_PATH=EXPORT_PATH,
                             TABLES_NEEDED=["NE"], DATE_COLUMN="AAMDATE", EXPORT_ALL_DATES=False,
                             COLUMNS_TO_DROP=['_id'], TABLE_FOR_MAXDATE="NE")
     exporter.run()
-
+    ##########################################################
+    ##########################################################
     fh.close()
+    ##########################################################
+    ##########################################################
