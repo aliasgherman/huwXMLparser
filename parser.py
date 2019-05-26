@@ -32,14 +32,12 @@ class ParserXML:
     NEVERSION_UNKOWN = [-1, -1, -1]
     NES_TO_IGNORE = ['DBS3900']  # we will not process these NEs as well (Like DCU etc.)
 
-    def __init__(self, logger, CONSIDER_DATEFILTERS=True, CUSTOM_DATE_FILTER_FILE="2019-05-22",
-                 CUSTOM_DATE_FILTER_DIR="20190522", EXPORT_CSV=True, INSERT_MONGO=False,
+    def __init__(self, logger, CUSTOM_DATE_FILTER="20190522",
+                 EXPORT_CSV=True, INSERT_MONGO=False,
                  DUMPDIR="/home/aamhabiby/Desktop/resources/TEST/",
                  EXPORT_DIR="/home/aamhabiby/Desktop/resources/"):
         self.logger = logger
-        self.CONSIDER_DATEFILTERS = CONSIDER_DATEFILTERS
-        self.CUSTOM_DATE_FILTER_FILE = CUSTOM_DATE_FILTER_FILE
-        self.CUSTOM_DATE_FILTER_DIR = CUSTOM_DATE_FILTER_DIR
+        self.CUSTOM_DATE_FILTER = CUSTOM_DATE_FILTER
         self.EXPORT_CSV = EXPORT_CSV
         self.INSERT_MONGO = INSERT_MONGO
         self.EXPORT_DIR = EXPORT_DIR
@@ -147,7 +145,7 @@ class ParserXML:
 
             elif self.getFileType(root, vendor=vendor, filetype=filetype) == self.FILETYPE_AUTOBACKUP:
                 self.export_autobackup_data(root=root, exportdir=exportdir,
-                                            considerdateFilter=self.CONSIDER_DATEFILTERS, vendor=vendor,
+                                            vendor=vendor,
                                             filetype=filetype)
                 return
 
@@ -196,7 +194,7 @@ class ParserXML:
         else:
             return name
 
-    def export_autobackup_data(self, root, exportdir, considerdateFilter=True,
+    def export_autobackup_data(self, root, exportdir,
                                vendor=VENDOR_HUW, filetype=FILETYPE_XML):
         # for i in root4.iter():
         #    if isinstance(i.tag, str):
@@ -219,14 +217,14 @@ class ParserXML:
                     "NENAME or NEDATE is unknown (NENAME, NEDATE) = (" + str(NENAME) + ", " + str(NEDATE) + ")")
                 return
 
-            tempDate = datetime.now()
-            tempDateFilter = "{:04d}-{:02d}-{:02d}".format(tempDate.year, tempDate.month, tempDate.day)
-            if (NEDATE.find(tempDateFilter) == -1) and (
-                    considerdateFilter == True):  # if this dump is not from today then dont process it
-                self.logger.info("Not processing this dump as datefilter not matched (filter = " + tempDateFilter)
-                return
-            elif considerdateFilter == False:
-                tempDateFilter = self.CUSTOM_DATE_FILTER_FILE
+            # tempDate = datetime.now()
+            # tempDateFilter = "{:04d}-{:02d}-{:02d}".format(tempDate.year, tempDate.month, tempDate.day)
+            # if (NEDATE.find(tempDateFilter) == -1) and (
+            #        considerdateFilter == True):  # if this dump is not from today then dont process it
+            #    self.logger.info("Not processing this dump as datefilter not matched (filter = " + tempDateFilter)
+            #    return
+            # elif considerdateFilter == False:
+            #    tempDateFilter = self.CUSTOM_DATE_FILTER_FILE
             currClass = ""
             for child in root:
                 # print(child.tag, " ==== " , child.attrib , " |||| \n")
@@ -320,8 +318,9 @@ class ParserXML:
         tempDateFilter = "{:04d}{:02d}{:02d}".format(tempDate.year, tempDate.month,
                                                      tempDate.day)  # this is to only extract the CFG xml files inside today's AUTOBAK folder
         MAIN_DIR = self.DUMPDIR
-        if self.CONSIDER_DATEFILTERS == False:  # only for testing in order to add any xml file regardless of the date
-            tempDateFilter = self.CUSTOM_DATE_FILTER_DIR
+        if self.CUSTOM_DATE_FILTER.strip() != "":  # only for testing in order to add any xml file regardless of the date
+            tempDateFilter = self.CUSTOM_DATE_FILTER
+            self.logger.warn("Date filter is overridden. Will use this filter for directory. " + str(tempDateFilter))
         self.gunzip_all(MAIN_DIR, dirFilter=tempDateFilter, fileFilter="cfg",
                         extensionFilter=".gz")  # first gunzip all the gz files in all directories.
         totFiles = self.getListOfFiles(MAIN_DIR, dirFilter=tempDateFilter, fileFilter="cfg", extensionFilter=".xml")

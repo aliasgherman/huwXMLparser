@@ -1,10 +1,19 @@
 from exportToExcel import *
 from parser import *
 
-DATE_TO_PROCESS = "20190522"
-DATE_TO_PROCESS_DIR = "2019-05-22"
+DATE_TO_PROCESS = "20190521"
+HOST_LIST = [["10.200.163.7", "ftpuser", "Vod_ftp_2015"],
+             ["10.200.163.15", "ftpuser", "Vod_ftp_2015"],
+             ["10.200.163.230", "ftpuser", "Changeme_123"]]
+
+LOCALFOLDER = "/home/aamhabiby/Desktop/resources/SMALLSET"
+# REMOTEFOLDER = "/ftproot/"
+FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900", "DBS3900 IBS", "MICRO BTS3900"]
+
 
 if __name__ == "__main__":
+    ##########################################################
+    # Setup the logger and then run the scripts
     ##########################################################
     import logging
     from logging.handlers import RotatingFileHandler
@@ -26,14 +35,29 @@ if __name__ == "__main__":
     myLogger.addHandler(ch)
     myLogger.addHandler(fh)
     ##########################################################
+    # Logger has been setup
+    ##########################################################
 
-    parser = ParserXML(logger=myLogger, CONSIDER_DATEFILTERS=False, CUSTOM_DATE_FILTER_FILE=DATE_TO_PROCESS_DIR,
-                       CUSTOM_DATE_FILTER_DIR=DATE_TO_PROCESS,
-                       EXPORT_CSV=False,
-                       INSERT_MONGO=True,
-                       DUMPDIR="/home/aamhabiby/Desktop/resources/SMALLSET/",
-                       EXPORT_DIR="/home/aamhabiby/Desktop/resources/")
+    ##########################################################
+    # Step 1 : Download autobakup files
+    ##########################################################
+    # downloader = XMLDownloader(myLogger)
+    # downloader.run(HOST_LIST=HOST_LIST, FOL_LIST=FOL_LIST, LOCALFOLDER=LOCALFOLDER, type=downloader.AUTOBAK)
+
+    ##########################################################
+    # Step 2 : Parse the downloaded XML files : Optional this
+    # step can also export all processed files as CSV
+    ##########################################################
+    parser = ParserXML(logger=myLogger, CUSTOM_DATE_FILTER=DATE_TO_PROCESS,
+                       EXPORT_CSV=True,
+                       INSERT_MONGO=False,
+                       DUMPDIR=LOCALFOLDER,
+                       EXPORT_DIR=LOCALFOLDER)
     parser.run()
+    ##########################################################
+    # Step 3 : Export the files from Mongo DB if they were
+    # inserted in mongo in step 2
+    ##########################################################
 
     exporter = MongoToExcel(logger=myLogger, DBNAME="BTS3900", EXPORT_PATH="/home/aamhabiby/Desktop/resources/",
                             TABLES_NEEDED=["NE"], DATE_COLUMN="AAMDATE", EXPORT_ALL_DATES=False,
