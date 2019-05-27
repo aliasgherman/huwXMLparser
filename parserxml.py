@@ -62,8 +62,7 @@ class ParserXML:
                         ret.append([a.tag, a.attrib])
                     # print(len(ret[1][1]), ret[1])
                     # print(ret)
-                    if (len(ret[1][1]) == 0):
-                        # print(len(ret[1]))
+                    if (ret[0][0].lower() == "bulkcmconfigdatafile") and (ret[1][1] == ""):
                         return self.FILETYPE_GEXPORT
                     elif (str(ret[1][1].keys()).lower().find('fileformatversion') > -1):
                         # print(str(ret[1][1].keys()).lower().find('neversion'))
@@ -89,11 +88,30 @@ class ParserXML:
             if (ftype == self.FILETYPE_GEXPORT):
                 for a in root.iter():
                     entries = entries + 1
-                    if entries == 5:
-                        ret_version = a.attrib['version'].split(" ")[1]
-                        ret_type = a.attrib['version'].split(" ")[0]
-                        ret_technique = a.attrib['technique']
-                        # print(a.attrib)
+                    if entries == 4:
+                        if "name" in a.attrib.keys():
+                            ret_type = a.attrib["name"]
+                    elif entries == 5:
+                        if "version" in a.attrib.keys():
+                            sp_ver = a.attrib["version"].split(" ")
+                            if (len(sp_ver) > 1):
+                                ret_version = sp_ver[1]
+                                if ret_type == "":
+                                    ret_type = sp_ver[0]
+                                if "technique" in a.attrib.keys():
+                                    ret_technique = a.attrib['technique']
+                                else:
+                                    ret_technique = ""
+                            else:
+                                ret_version = sp_ver[0]
+                                if "technique" in a.attrib.keys():
+                                    if ret_type == "":
+                                        ret_type = a.attrib["technique"]
+                                    ret_technique = a.attrib["technique"]
+                                else:
+                                    if ret_type == "":
+                                        ret_type = "UNKNOWN"
+                                    ret_technique = ""
                         return [ret_version.upper(), ret_technique.upper(), ret_type.upper()]
             elif (ftype == self.FILETYPE_AUTOEXPORT):
                 for a in root.iter():
@@ -101,8 +119,11 @@ class ParserXML:
                     if entries == 2:
                         assert a.tag.lower() == 'fileHeader'.lower()
                         for strVal in a.attrib.values():
-                            ret_type = strVal.split(" ")[0]
-                            ret_version = strVal[len(ret_type) + 1:]  # include everything after first word
+                            strSpl = strVal.split(" ")
+                            ret_type = strSpl[0]
+                            ret_version = strSpl[len(
+                                strSpl) - 1]  # take the last item as ret_version. (Example "BTS3900 LTE V100R015C500") we will keep BTS3900 and the V100R015C500
+                            ret_technique = strVal
                             break
                         return [ret_version.upper(), ret_technique.upper(), ret_type.upper()]
             elif (ftype == self.FILETYPE_AUTOBACKUP):
@@ -127,24 +148,25 @@ class ParserXML:
             self.logger.error("Exception occurred in getneversion. " + str(e))
             return self.NEVERSION_UNKOWN
 
-    def export_all_tables(self, root, exportdir, vendor=VENDOR_HUW, filetype=FILETYPE_XML):
+    def export_all_tables(self, root, exportdir, filename="", vendor=VENDOR_HUW, filetype=FILETYPE_XML):
         try:
             startRoot = root
-            if self.getFileType(root, vendor=vendor, filetype=filetype) == self.FILETYPE_GEXPORT:
+            typeOfXML = self.getFileType(root, vendor=vendor, filetype=filetype)
+            if typeOfXML == self.FILETYPE_GEXPORT:
                 for i in root:
-                    print(i.tag, i.attrib)
+                    #print(i.tag, i.attrib)
                     if i.tag.lower() == 'configData'.lower():
                         for j in i:
-                            print(j.tag, j.attrib)
+                            #print(j.tag, j.attrib)
                             for k in j:
-                                print(k.tag, k.attrib)
+                                #print(k.tag, k.attrib)
                                 startRoot = k
                                 break
-            elif self.getFileType(root, vendor=vendor, filetype=filetype) == self.FILETYPE_AUTOEXPORT:
+            elif typeOfXML == self.FILETYPE_AUTOEXPORT:
                 startRoot = root
 
-            elif self.getFileType(root, vendor=vendor, filetype=filetype) == self.FILETYPE_AUTOBACKUP:
-                self.export_autobackup_data(root=root, exportdir=exportdir,
+            elif typeOfXML == self.FILETYPE_AUTOBACKUP:
+                self.export_autobackup_data(root=root, exportdir=exportdir, filename=filename,
                                             vendor=vendor,
                                             filetype=filetype)
                 return
@@ -152,6 +174,13 @@ class ParserXML:
             else:
                 self.logger.info("Unknown filetype. So not processing this file.")
                 return
+
+            CURRNENAME = self.get_ne_for_gexport(filename)
+            temp = self.getneversion(root, vendor=vendor, filetype=filetype)
+            T_VERSION = temp[0]
+            T_TECHNIQUE = temp[1]
+            T_BTSTYPE = str(typeOfXML) + "-" + temp[
+                2]  #this is so that in mongo db if we load all kinds of files, the collections are not duplicated
 
             for it in startRoot.iter():
                 if (it.tag == 'class'):
@@ -167,23 +196,36 @@ class ParserXML:
 
                     df = pd.DataFrame()
                     df = df.from_records(currTab)
-                    df['MONAME'] = currClass
-                    temp = self.getneversion(root, vendor=vendor, filetype=filetype)
-                    df['VERSION'] = temp[0]
-                    df['TECHNIQUE'] = temp[1]
-                    df['BTSTYPE'] = temp[2]
-                    if (len(df) > 0):
+
+                    df['VERSION'] = T_VERSION
+                    df['TECHNIQUE'] = T_TECHNIQUE
+                    df['BTSTYPE'] = T_BTSTYPE
+                    # This special processing is for GExport type files. The MO names in such files are like ACL_BSC6910UMTS so we only need ACL from this output
+                    moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
+                    df['MONAME'] = moname
+                    df['FILENAME'] = filename
+                    df['NENAME'] = CURRNENAME
+                    CUSTOM_COL_COUNT = 6
+                    cols = df.columns.tolist()  # we want to move the custom added 5 columns to the beginning of the frame
+                    cols = cols[-CUSTOM_COL_COUNT:] + cols[:-CUSTOM_COL_COUNT]
+                    df = df[cols]  # rearrange the columns so that custom columns are in the beginning
+
+                    if len(df) > 0:
                         if self.EXPORT_CSV == True:
-                            newDir = os.path.join(exportdir, temp[2], temp[0])
-                            newFileName = os.path.join(newDir, currClass + ".csv")
+                            newDir = os.path.join(exportdir, T_BTSTYPE, T_VERSION)
+                            newFileName = os.path.join(newDir, moname + ".csv")
                             if os.path.isfile(newFileName):
                                 df.to_csv(newFileName, index=False, header=False, mode="a")
                             else:
                                 if not os.path.exists(newDir):
                                     os.makedirs(newDir)
                                 df.to_csv(newFileName, index=False)  # use os to properly join the filenames for any OS
+                        if (self.INSERT_MONGO == True):
+                            self.df_to_mongo(T_BTSTYPE, moname, df)
                     else:
-                        self.logger.info("0 length class not exported." + str(currClass))
+                        pass
+                        #self.logger.info("0 length class not exported." + str(moname))
+
         except Exception as e:
             self.logger.error("An Exception occurred in the main export_all_tables function. " + str(e))
 
@@ -194,8 +236,34 @@ class ParserXML:
         else:
             return name
 
+    def get_ne_for_gexport(self, filename):
+        strSpl = os.path.split(filename)
+        if len(strSpl) > 1:
+            filePart = strSpl[1]
+            if filePart.lower().find("gexport") > -1:  # this is the gexport dump
+                # gexport naming is like "GExport_BSC01_IPADDRESS_TIMESTAMP.xml"
+                totParts = filePart.split("_")
+                if len(totParts) < 4:
+                    if (len(totParts) > 1):
+                        return totParts[
+                            1]  # does not seem to be the right format. So just return the second split string
+                    else:
+                        return "UNKNOWN"
+                else:
+                    return "_".join(totParts[1:len(totParts) - 2])  # return name excluding first item and last 2 items
+            else:
+                totParts = filePart.split("_")
+                # this may be of the type ALL_NENAME_XX_XX_TIMESTAMP
+                if (len(totParts) < 3):
+                    if (len(totParts) > 1):
+                        return totParts[1]
+                    else:
+                        return "UNKNOWN"
+                else:
+                    return "_".join(totParts[1:len(totParts) - 1])
+
     def export_autobackup_data(self, root, exportdir,
-                               vendor=VENDOR_HUW, filetype=FILETYPE_XML):
+                               filename, vendor=VENDOR_HUW, filetype=FILETYPE_XML):
         # for i in root4.iter():
         #    if isinstance(i.tag, str):
         #        print(i.attrib, i.tag)
@@ -257,7 +325,8 @@ class ParserXML:
                             df['TECHNIQUE'] = NEVERSION[1]
                             df['BTSTYPE'] = NEVERSION[2]
                             df['AAMDATE'] = NEDATE[:10]  # only the date part
-                            CUSTOM_COL_COUNT = 6
+                            df['FILENAME'] = filename
+                            CUSTOM_COL_COUNT = 7
 
                             cols = df.columns.tolist()  # we want to move the custom added 5 columns to the beginning of the frame
 
@@ -321,9 +390,9 @@ class ParserXML:
         if self.CUSTOM_DATE_FILTER.strip() != "":  # only for testing in order to add any xml file regardless of the date
             tempDateFilter = self.CUSTOM_DATE_FILTER
             self.logger.warn("Date filter is overridden. Will use this filter for directory. " + str(tempDateFilter))
-        self.gunzip_all(MAIN_DIR, dirFilter=tempDateFilter, fileFilter="cfg",
+        self.gunzip_all(MAIN_DIR, dirFilter=tempDateFilter, fileFilter="",
                         extensionFilter=".gz")  # first gunzip all the gz files in all directories.
-        totFiles = self.getListOfFiles(MAIN_DIR, dirFilter=tempDateFilter, fileFilter="cfg", extensionFilter=".xml")
+        totFiles = self.getListOfFiles(MAIN_DIR, dirFilter=tempDateFilter, fileFilter="", extensionFilter=".xml")
         self.logger.info("Total files to be processed are : " + str(len(totFiles)))
         for f in totFiles:
             tree1 = etree.parse(f)
@@ -331,7 +400,7 @@ class ParserXML:
             # print(getFileType(root1))
             # print(getneversion(root1))
             self.logger.info("Starting File " + f)
-            self.export_all_tables(root=root1, exportdir=self.EXPORT_DIR)
+            self.export_all_tables(root=root1, exportdir=self.EXPORT_DIR, filename=f)
         self.logger.info("All files have been processed.")
 
     def un_gzip(self, filename):
@@ -361,7 +430,8 @@ class ParserXML:
             tempDate = datetime.now()
             tempDateFilter = "{:04d}{:02d}{:02d}".format(tempDate.year, tempDate.month,
                                                          tempDate.day)  # this is to only extract the CFG xml files inside today's AUTOBAK folder
-            self.logger.info("The template for gunzip will be " + tempDateFilter)
+            self.logger.info(
+                "The template for gunzip will be " + dirFilter + " and " + fileFilter + " and " + extensionFilter)
             for files in self.getListOfFiles(dirName=dirName, dirFilter=dirFilter,
                                              fileFilter=fileFilter, extensionFilter=extensionFilter):
                 self.un_gzip(files)
@@ -369,15 +439,15 @@ class ParserXML:
             self.logger.error("Exception occurred in gunzip_all function." + str(e))
 
     def getListOfFiles(self, dirName, dirFilter="", fileFilter="", extensionFilter=".xml"):
-        # create a list of file and sub directories 
-        # names in the given directory 
+        # create a list of file and sub directories
+        # names in the given directory
         listOfFile = os.listdir(dirName)
         allFiles = list()
         # Iterate over all the entries
         for entry in listOfFile:
             # Create full path
             fullPath = os.path.join(dirName, entry)
-            # If entry is a directory then get the list of files in this directory 
+            # If entry is a directory then get the list of files in this directory
             if os.path.isdir(fullPath):
                 allFiles = allFiles + self.getListOfFiles(fullPath, dirFilter=dirFilter, fileFilter=fileFilter,
                                                           extensionFilter=extensionFilter)
