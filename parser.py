@@ -32,7 +32,7 @@ class ParserXML:
     NEVERSION_UNKOWN = [-1, -1, -1]
     NES_TO_IGNORE = ['DBS3900']  # we will not process these NEs as well (Like DCU etc.)
 
-    def __init__(self, logger, CUSTOM_DATE_FILTER="20190522",
+    def __init__(self, logger, CUSTOM_DATE_FILTER="",
                  EXPORT_CSV=True, INSERT_MONGO=False,
                  DUMPDIR="/home/aamhabiby/Desktop/resources/TEST/",
                  EXPORT_DIR="/home/aamhabiby/Desktop/resources/"):
