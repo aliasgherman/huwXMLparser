@@ -1,15 +1,18 @@
 from downloadAutobak import *
+from parserxml import *
 from exportToExcel import *
-from parser import *
 
-DATE_TO_PROCESS = "20190521"
+
+DATE_TO_PROCESS = ""
 HOST_LIST = [["10.200.163.7", "ftpuser", "Vod_ftp_2015"],
              ["10.200.163.15", "ftpuser", "Vod_ftp_2015"],
              ["10.200.163.230", "ftpuser", "Changeme_123"]]
 
-LOCALFOLDER = "/home/aamhabiby/Desktop/resources/SMALLSET"
-EXPORT_PATH = "/home/aamhabiby/Desktop/resources/"
+#LOCALFOLDER = "/home/aamhabiby/Desktop/resources/SMALLSET"
+#EXPORT_PATH = "/home/aamhabiby/Desktop/resources/"
 # REMOTEFOLDER = "/ftproot/"
+LOCALFOLDER = "E:/AAM/TEST"
+EXPORT_PATH = "E:/AAM/TEST"
 FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900", "DBS3900 IBS", "MICRO BTS3900"]
 
 
@@ -43,19 +46,19 @@ if __name__ == "__main__":
     ##########################################################
     # Step 1 : Download autobakup files
     ##########################################################
-    downloader = XMLDownloader(myLogger)
-    downloader.run(HOST_LIST=HOST_LIST, FOL_LIST=FOL_LIST, LOCALFOLDER=LOCALFOLDER, type=downloader.AUTOBAK)
+    #downloader = XMLDownloader(myLogger, PATHFILTER=DATE_TO_PROCESS, HOST_LIST=HOST_LIST, FOL_LIST=FOL_LIST, LOCALFOLDER=LOCALFOLDER, type=XMLDownloader.AUTOBAK)
+    #downloader.run()
 
     ##########################################################
     # Step 2 : Parse the downloaded XML files : Optional this
     # step can also export all processed files as CSV
     ##########################################################
-    parser = ParserXML(logger=myLogger, CUSTOM_DATE_FILTER=DATE_TO_PROCESS,
+    parserXML = ParserXML(logger=myLogger, CUSTOM_DATE_FILTER=DATE_TO_PROCESS,
                        EXPORT_CSV=True,
-                       INSERT_MONGO=True,
+                       INSERT_MONGO=False,
                        DUMPDIR=LOCALFOLDER,
                        EXPORT_DIR=LOCALFOLDER)
-    parser.run()
+    parserXML.run()
     ##########################################################
     # Step 3 : Export the files from Mongo DB if they were
     # inserted in mongo in step 2
