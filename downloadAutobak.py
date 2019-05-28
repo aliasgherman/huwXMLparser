@@ -45,9 +45,8 @@ class XMLDownloader:
                     if str(remotepath).lower().find(self.PATHFILTER.lower()) > -1:
                         sftp.get(remotepath, localpath, preserve_mtime=preserve_mtime)
                         self.logger.info("Current remotepath is : " + str(remotepath) + ", Filter is " + self.PATHFILTER.strip().lower())
-                
 
-    def run(self,):
+    def run(self):
         if self.type == self.AUTOBAK:
             REMOTEFOLDER = "/ftproot/"
         else:
