@@ -3,8 +3,8 @@ The XML files are exported by U2000/U2020 on the ftp paths automatically
 
 There are three types of xml files supported for parsing the xml
 1. AUTOBAK Files : These are usually placed at /ftproot/BTSTYPEXXX/Data folders
-2. GExport XML : These are inside the export folders at cm/ with the name like GExport_NENAME_IPADDRESS_TIMESTAMP.xml.gz
-3. NE GExport XML : These are inside the folders like NE1231 inside the same folder as GExport files
+2. GExport XML : These are inside the /opt/oss/server/var/fileint/cm/GExport folders with the name like GExport_NENAME_IPADDRESS_TIMESTAMP.xml.gz
+3. NE GExport XML : These are inside the /opt/oss/server/var/fileint/cm/GExport but are in Folders like NE1231. These folders contain files named like ALL_NENAME_TIMESTAMP.xml.gz
 
 You can use any of these files for parsing or all of them together.
 
