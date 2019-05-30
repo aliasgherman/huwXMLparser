@@ -1,18 +1,14 @@
-import logging
-
 from downloadAutobak import *
 from exportToExcel import *
 from loggersetup import *
 from parserxml import *
 
-DATE_TO_PROCESS = ""
+DATE_TO_PROCESS = "20190522"
 HOST_LIST = [["10.200.163.7", "ftpuser", "PWD1"],
              ["10.200.163.15", "ftpuser", "PWD2"],
              ["10.200.163.230", "ftpuser", "PWD3"]]
-
-LOCALFOLDER = "/home/user/xmlfiles/"
-EXPORT_PATH = "/home/user/exportfiles/"
-
+LOCALFOLDER = "/home/aamhabiby/Desktop/resources/MIXEDSET/"
+EXPORT_PATH = "/home/aamhabiby/Desktop/resources/"
 FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900", "DBS3900 IBS", "MICRO BTS3900"]
 
 
@@ -33,7 +29,7 @@ if __name__ == "__main__":
     myLogger = loggingClass.run()
 
     '''
-    # Step 1 : Download autobakup files
+    # Step 2 : Download autobakup files
     # The autoback / GExport / NE export files are available on the FTP of U2020/U2000 servers.
     # This function can download the files for AUTOBACK which are generally available inside /ftproot/ folder
     # The parameters are

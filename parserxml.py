@@ -95,9 +95,11 @@ class ParserXML:
                         if "version" in a.attrib.keys():
                             sp_ver = a.attrib["version"].split(" ")
                             if (len(sp_ver) > 1):
-                                ret_version = sp_ver[1]
-                                if ret_type == "":
-                                    ret_type = sp_ver[0]
+                                ret_version = sp_ver[len(sp_ver) - 1]  # set version to the last string
+                                ret_type = "".join(sp_ver[: len(
+                                    sp_ver) - 1])  # the rettype will now be everything before last part of the version string
+                                # if ret_type == "":
+                                #    ret_type = sp_ver[0]
                                 if "technique" in a.attrib.keys():
                                     ret_technique = a.attrib['technique']
                                 else:
@@ -201,7 +203,16 @@ class ParserXML:
                     df['TECHNIQUE'] = T_TECHNIQUE
                     df['BTSTYPE'] = T_BTSTYPE
                     # This special processing is for GExport type files. The MO names in such files are like ACL_BSC6910UMTS so we only need ACL from this output
-                    moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
+                    # moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
+                    moname = currClass.upper().split("_")
+                    if len(moname) == 2:
+                        if moname[0][: len(moname[1])] == moname[1]:
+                            moname = moname[0][len(moname[1]):]
+                        else:
+                            moname = moname[0]
+                    else:
+                        moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
+
                     df['MONAME'] = moname
                     df['FILENAME'] = filename
                     df['NENAME'] = CURRNENAME
