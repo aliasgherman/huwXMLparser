@@ -1,34 +1,36 @@
+# Simple Summary
 This set of scripts is used to export the 2G/3G/4G/5G Dumps from Huawei xml files
 The XML files are exported by U2000/U2020 on the ftp paths automatically
 
 There are three types of xml files supported for parsing the xml
-1. AUTOBAK Files : These are usually placed at /ftproot/BTSTYPEXXX/Data folders
-2. GExport XML : These are inside the /opt/oss/server/var/fileint/cm/GExport folders with the name like GExport_NENAME_IPADDRESS_TIMESTAMP.xml.gz
-3. NE GExport XML : These are inside the /opt/oss/server/var/fileint/cm/GExport but are in Folders like NE1231. These folders contain files named like ALL_NENAME_TIMESTAMP.xml.gz
+- AUTOBAK Files : These are usually placed at /ftproot/BTSTYPEXXX/Data folders
+- GExport XML : These are inside the /opt/oss/server/var/fileint/cm/GExport folders with the name like GExport_NENAME_IPADDRESS_TIMESTAMP.xml.gz
+- NE GExport XML : These are inside the /opt/oss/server/var/fileint/cm/GExport but are in Folders like NE1231. These folders contain files named like ALL_NENAME_TIMESTAMP.xml.gz
 
 You can use any of these files for parsing or all of them together.
 
-Dependencies : 
+# Dependencies : 
 
 pip install pandas
 pip install lxml
 pip install pymongo
 
-Usage :
+# Usage :
 Just go through the file named main.py and change the settings as per the comments mentioned
 
 Broadly speaking there are 3 scripts and you can choose to run any OR all of them
-++++ Step 1 is just setting up a logging function. So no need to do anything
+* Step 1 is just setting up a logging function. So no need to do anything
 
-1. Step 2 (Script to download autobak xml files) - This will download the autobak files if you have specified the FTP server IPs and user/pwd settings
+* Step 2 (Script to download autobak xml files) - This will download the autobak files if you have specified the FTP server IPs and user/pwd settings
 If you dont need to download the files, then just comment out the lines under Step 2
 
-2. Step 3 (Script for Actual Parsing of all valid xml files) - You just need to specify if you want to export results to CSV and if you also want to import results into Mongodb. Also specify where to export and import the files from.
+* Step 3 (Script for Actual Parsing of all valid xml files) - You just need to specify if you want to export results to CSV and if you also want to import results into Mongodb. Also specify where to export and import the files from.
 
-3. Step 4 (This is just a helper utility to export tables from Mongo DB) - If you need some tables to be exported from MongoDB (if you had inserted the tables at anytime) then you can use this utility function. Just comment step 4 if not needed by you.
+* Step 4 (This is just a helper utility to export tables from Mongo DB) - If you need some tables to be exported from MongoDB (if you had inserted the tables at anytime) then you can use this utility function. Just comment step 4 if not needed by you.
 
-main.py
+### Step Detailed Comments for Parameters
 
+```python
     '''
     # Step 1 : Setup the logging (no print commands should be used in code.
     #           So that automatic scripts are easier to setup)
@@ -124,3 +126,4 @@ main.py
                             TABLES_NEEDED=["NE"], DATE_COLUMN="AAMDATE", EXPORT_ALL_DATES=False,
                             COLUMNS_TO_DROP=['_id'], TABLE_FOR_MAXDATE="NE")
     exporter.run()
+```
