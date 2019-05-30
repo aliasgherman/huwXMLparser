@@ -28,7 +28,7 @@ If you dont need to download the files, then just comment out the lines under St
 
 * Step 4 (This is just a helper utility to export tables from Mongo DB) - If you need some tables to be exported from MongoDB (if you had inserted the tables at anytime) then you can use this utility function. Just comment step 4 if not needed by you.
 
-### Step Detailed Comments for Parameters
+### Detailed comments from the section of main.py for custom configuraitons
 
 ```python
     '''
