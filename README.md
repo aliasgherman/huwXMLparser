@@ -11,9 +11,9 @@ You can use any of these files for parsing or all of them together.
 
 # Dependencies : 
 
-pip install pandas
-pip install lxml
-pip install pymongo
+* pip install pandas
+* pip install lxml
+* pip install pymongo
 
 # Usage :
 Just go through the file named main.py and change the settings as per the comments mentioned
