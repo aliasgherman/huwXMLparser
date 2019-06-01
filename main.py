@@ -1,16 +1,49 @@
-from downloadAutobak import *
-from exportToExcel import *
+import subprocess
+from datetime import datetime
+
 from loggersetup import *
 from parserxml import *
 
-DATE_TO_PROCESS = "20190522"
-HOST_LIST = [["10.200.163.7", "ftpuser", "PWD1"],
-             ["10.200.163.15", "ftpuser", "PWD2"],
-             ["10.200.163.230", "ftpuser", "PWD3"]]
-LOCALFOLDER = "/home/aamhabiby/Desktop/resources/MIXEDSET/"
-EXPORT_PATH = "/home/aamhabiby/Desktop/resources/"
-FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900", "DBS3900 IBS", "MICRO BTS3900"]
+ENVIRON_TEST = True
 
+if ENVIRON_TEST == True:
+    DATE_TO_PROCESS = "20190522"
+    HOST_LIST = [["10.200.163.7", "ftpuser", "PWD1"],
+                 ["10.200.163.15", "ftpuser", "PWD2"],
+                 ["10.200.163.230", "ftpuser", "PWD3"]]
+    LOCALFOLDER = "/home/aamhabiby/Desktop/resources/MIXEDSET"
+    if DATE_TO_PROCESS == "":
+        todayDate = datetime.now()
+        todayDate = "{:04d}{:02d}{:02d}".format(todayDate.year, todayDate.month, todayDate.day)
+    else:
+        todayDate = DATE_TO_PROCESS
+    EXPORT_PATH = "/home/aamhabiby/Desktop/resources/" + todayDate + "/"
+    ZIP_EXPORT_PATH = "/home/aamhabiby/Desktop/resources/" + todayDate + ".7z"
+    FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900", "DBS3900 IBS", "MICRO BTS3900"]
+    loc_7z = '7z'
+    loc_files = EXPORT_PATH
+    loc_export = ZIP_EXPORT_PATH
+    finalCommand = r'"{}" a "{}" -r "{}" -mx=9'.format(loc_7z, loc_export, loc_files)
+else:
+    DATE_TO_PROCESS = ""
+    HOST_LIST = [["10.200.163.7", "ftpuser", "PWD1"],
+                 ["10.200.163.15", "ftpuser", "PWD2"],
+                 ["10.200.163.230", "ftpuser", "PWD3"]]
+    LOCALFOLDER = "E:\\AAM\\cm\\"
+    if DATE_TO_PROCESS == "":
+        todayDate = datetime.now()
+        todayDate = "{:04d}{:02d}{:02d}".format(todayDate.year, todayDate.month, todayDate.day)
+    else:
+        todayDate = DATE_TO_PROCESS
+    EXPORT_PATH = "E:\\AAM\\exports\\" + todayDate + "\\"
+    ZIP_EXPORT_PATH = "E:\\AAM\\exports\\" + todayDate + ".7z"
+    FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900", "DBS3900 IBS", "MICRO BTS3900"]
+    loc_7z = 'C:\\Program Files\\7-Zip\\7z.exe'
+    loc_files = EXPORT_PATH
+    loc_export = ZIP_EXPORT_PATH
+    finalCommand = r'"{}" a "{}" -r "{}" -mx=9 -sdel'.format(loc_7z, loc_export, loc_files)
+
+# ARCHIVECOMMAND = '"C:\Program Files\7-Zip\7z.exe' a 20190531.7z -r 20190531 -mx=9 -sdel"
 
 if __name__ == "__main__":
     '''
@@ -49,10 +82,10 @@ if __name__ == "__main__":
         # type : Type of the file. For now it can only be XMLDownloader.AUTOBAK. Later versions should support GExport files
     '''
 
-    downloader = XMLDownloader(myLogger, PATHFILTER=DATE_TO_PROCESS,
-                               HOST_LIST=HOST_LIST, FOL_LIST=FOL_LIST,
-                               LOCALFOLDER=LOCALFOLDER, type=XMLDownloader.AUTOBAK)
-    downloader.run()
+    #    downloader = XMLDownloader(myLogger, PATHFILTER=DATE_TO_PROCESS,
+    #                               HOST_LIST=HOST_LIST, FOL_LIST=FOL_LIST,
+    #                               LOCALFOLDER=LOCALFOLDER, type=XMLDownloader.AUTOBAK)
+    #    downloader.run()
 
     '''
     # Step 3 : Parse the downloaded XML files and then export files to CSV or Import them to MongoDB or both
@@ -79,6 +112,9 @@ if __name__ == "__main__":
                           EXPORT_DIR=EXPORT_PATH)
     parserXML.run()
 
+    myLogger.info(finalCommand)
+    subprocess.call(finalCommand, shell=True)
+
     '''
     # Optional Step: Utility to export tables from MongoDB. Any previous tables can be exported as Excel file
     # PLEASE NOTE THAT THE STEP2 and STEP3 are not required for this if the dumps are already in MongoDB
@@ -101,10 +137,10 @@ if __name__ == "__main__":
                             Example : TABLE_FOR_MAX_DATE = "NE" means that we will query the latest date available in
                                         "NE" Collection and then use that date to generate the output if 
                                         EXPORT_ALL_DATES is set to False. 
-    
+
     '''
 
-    exporter = MongoToExcel(logger=myLogger, DBNAME="BTS3900", EXPORT_PATH=EXPORT_PATH,
-                            TABLES_NEEDED=["NE"], DATE_COLUMN="AAMDATE", EXPORT_ALL_DATES=False,
-                            COLUMNS_TO_DROP=['_id'], TABLE_FOR_MAXDATE="NE")
-    exporter.run()
+#    exporter = MongoToExcel(logger=myLogger, DBNAME="BTS3900", EXPORT_PATH=EXPORT_PATH,
+#                            TABLES_NEEDED=["NE"], DATE_COLUMN="AAMDATE", EXPORT_ALL_DATES=False,
+#                            COLUMNS_TO_DROP=['_id'], TABLE_FOR_MAXDATE="NE")
+#    exporter.run()

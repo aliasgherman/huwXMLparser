@@ -226,7 +226,11 @@ class ParserXML:
                             newDir = os.path.join(exportdir, T_BTSTYPE, T_VERSION)
                             newFileName = os.path.join(newDir, moname + ".csv")
                             if os.path.isfile(newFileName):
-                                df.to_csv(newFileName, index=False, header=False, mode="a")
+                                df_temp = pd.read_csv(newFileName)
+                                df = pd.concat([df_temp, df], axis=0,
+                                               sort=False)  # we have to concat as some times NEs may have some additional headers which other NEs may not have
+                                # concat will give NaN for missing headers in other NEs automatically and join the dfs properly
+                                df.to_csv(newFileName, index=False)
                             else:
                                 if not os.path.exists(newDir):
                                     os.makedirs(newDir)
@@ -348,8 +352,11 @@ class ParserXML:
                                     newDir = os.path.join(exportdir, NEVERSION[2], NEVERSION[0])
                                     newFileName = os.path.join(newDir, currClass + ".csv")
                                     if os.path.isfile(newFileName):
-                                        df.to_csv(newFileName, index=False, header=False,
-                                                  mode='a')  # use os to properly join the filenames for any OS
+                                        df_temp = pd.read_csv(newFileName)
+                                        df = pd.concat([df_temp, df], axis=0,
+                                                       sort=False)  # we have to concat as some times NEs may have some additional headers which other NEs may not have
+                                        # concat will give NaN for missing headers in other NEs automatically and join the dfs properly
+                                        df.to_csv(newFileName, index=False)
                                     else:
                                         if not os.path.exists(newDir):
                                             os.makedirs(newDir)
