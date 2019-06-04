@@ -19,6 +19,13 @@ import pandas as pd
 from lxml import etree
 from pymongo import MongoClient
 
+F_VERSION = "VERSION"
+F_TECHNIQUE = "TECHNIQUE"
+F_BTSTYPE = "BTSTYPE"
+F_MONAME = "MONAME"
+F_FILENAME = "FILENAME"
+F_NENAME = "NENAME_AAM"
+F_DATE = "AAMDATE"
 
 class ParserXML:
     VENDOR_HUW = "HUW"
@@ -178,6 +185,7 @@ class ParserXML:
                 return
 
             CURRNENAME = self.get_ne_for_gexport(filename)
+            CURRDATE = self.get_ne_datetime(root, filename)
             temp = self.getneversion(root, vendor=vendor, filetype=filetype)
             T_VERSION = temp[0]
             T_TECHNIQUE = temp[1]
@@ -199,9 +207,9 @@ class ParserXML:
                     df = pd.DataFrame()
                     df = df.from_records(currTab)
 
-                    df['VERSION'] = T_VERSION
-                    df['TECHNIQUE'] = T_TECHNIQUE
-                    df['BTSTYPE'] = T_BTSTYPE
+                    df[F_VERSION] = T_VERSION
+                    df[F_TECHNIQUE] = T_TECHNIQUE
+                    df[F_BTSTYPE] = T_BTSTYPE
                     # This special processing is for GExport type files. The MO names in such files are like ACL_BSC6910UMTS so we only need ACL from this output
                     # moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
                     moname = currClass.upper().split("_")
@@ -213,10 +221,11 @@ class ParserXML:
                     else:
                         moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
 
-                    df['MONAME'] = moname
-                    df['FILENAME'] = filename
-                    df['NENAME'] = CURRNENAME
-                    CUSTOM_COL_COUNT = 6
+                    df[F_MONAME] = moname
+                    df[F_FILENAME] = filename
+                    df[F_NENAME] = CURRNENAME
+                    df[F_DATE] = CURRDATE
+                    CUSTOM_COL_COUNT = 7
                     cols = df.columns.tolist()  # we want to move the custom added 5 columns to the beginning of the frame
                     cols = cols[-CUSTOM_COL_COUNT:] + cols[:-CUSTOM_COL_COUNT]
                     df = df[cols]  # rearrange the columns so that custom columns are in the beginning
@@ -252,30 +261,27 @@ class ParserXML:
             return name
 
     def get_ne_for_gexport(self, filename):
+        '''
+        Returns the NENAME, DATE, IP from the GExport file name
+        :param filename:Full path to the GExport xml file
+        :return:
+        '''
+        nename = "UNKNOWN"
         strSpl = os.path.split(filename)
         if len(strSpl) > 1:
             filePart = strSpl[1]
             if filePart.lower().find("gexport") > -1:  # this is the gexport dump
                 # gexport naming is like "GExport_BSC01_IPADDRESS_TIMESTAMP.xml"
                 totParts = filePart.split("_")
-                if len(totParts) < 4:
-                    if (len(totParts) > 1):
-                        return totParts[
-                            1]  # does not seem to be the right format. So just return the second split string
-                    else:
-                        return "UNKNOWN"
-                else:
-                    return "_".join(totParts[1:len(totParts) - 2])  # return name excluding first item and last 2 items
-            else:
+                lenParts = len(totParts)
+                nename = "_".join(totParts[1:len(totParts) - 2])
+                return nename
+            elif filePart.lower().find("all") > -1:  # this maybe of type ALL_LSI19191_123123.xml
                 totParts = filePart.split("_")
-                # this may be of the type ALL_NENAME_XX_XX_TIMESTAMP
-                if (len(totParts) < 3):
-                    if (len(totParts) > 1):
-                        return totParts[1]
-                    else:
-                        return "UNKNOWN"
-                else:
-                    return "_".join(totParts[1:len(totParts) - 1])
+                lenParts = len(totParts)
+                nename = "_".join(totParts[1:len(totParts) - 1])
+        return nename
+
 
     def export_autobackup_data(self, root, exportdir,
                                filename, vendor=VENDOR_HUW, filetype=FILETYPE_XML):
@@ -294,7 +300,7 @@ class ParserXML:
                 self.logger.info("Ignoring this NE as BTSTYPE is in ignore list. (" + str(NEVERSION[2]) + ")")
                 return
             NENAME = self.get_ne_name(root)
-            NEDATE = self.get_ne_datetime(root)
+            NEDATE = self.get_ne_datetime(root, filename)
             if (NENAME == self.NENAME_UNKNOWN) or (NEDATE == self.EXPORTDATE_UNKNOWN):
                 self.logger.error(
                     "NENAME or NEDATE is unknown (NENAME, NEDATE) = (" + str(NENAME) + ", " + str(NEDATE) + ")")
@@ -334,13 +340,13 @@ class ParserXML:
                             # print(paramList)
                         if (len(paramTab) > 0):
                             df = pd.DataFrame(paramTab)
-                            df['NENAME_AAM'] = NENAME
-                            df['MONAME'] = currClass
-                            df['VERSION'] = NEVERSION[0]
-                            df['TECHNIQUE'] = NEVERSION[1]
-                            df['BTSTYPE'] = NEVERSION[2]
-                            df['AAMDATE'] = NEDATE[:10]  # only the date part
-                            df['FILENAME'] = filename
+                            df[F_NENAME] = NENAME
+                            df[F_MONAME] = currClass
+                            df[F_VERSION] = NEVERSION[0]
+                            df[F_TECHNIQUE] = NEVERSION[1]
+                            df[F_BTSTYPE] = NEVERSION[2]
+                            df[F_DATE] = NEDATE[:10]  # only the date part
+                            df[F_FILENAME] = filename
                             CUSTOM_COL_COUNT = 7
 
                             cols = df.columns.tolist()  # we want to move the custom added 5 columns to the beginning of the frame
@@ -388,16 +394,24 @@ class ParserXML:
             self.logger.info("NENAME found for this file is " + retText)
         return retText
 
-    def get_ne_datetime(self, root):
+    def get_ne_datetime(self, root, filename):
         retText = self.EXPORTDATE_UNKNOWN
-        for temp in root.iter():
-            if isinstance(temp, etree._Comment) == False:
-                if self.normalize(temp.tag).lower().find("footer") > -1:
-                    retText = temp.attrib['dateTime']
-        if (retText == self.EXPORTDATE_UNKNOWN):
-            self.logger.error("NE Export date not found in the file while processing.")
-        else:
-            self.logger.info("NE Date found for this file is " + retText)
+        if self.getFileType(root) == self.FILETYPE_GEXPORT:
+            strSpl = os.path.split(filename)
+            if len(strSpl) > 1:
+                filePart = strSpl[1]
+                if filePart.lower().find("gexport") > -1:  # this is the gexport dump
+                    # gexport naming is like "GExport_BSC01_IPADDRESS_TIMESTAMP.xml"
+                    totParts = filePart.split("_")
+                    lenParts = len(totParts)
+                    retText = totParts[lenParts - 1][:8]
+        elif self.getFileType(root) == self.FILETYPE_AUTOBACKUP or self.getFileType(root) == self.FILETYPE_AUTOEXPORT:
+            for temp in root.iter():
+                if isinstance(temp, etree._Comment) == False:
+                    if self.normalize(temp.tag).lower().find("footer") > -1:
+                        retText = temp.attrib['dateTime']
+        retText = str(retText[:10]).replace("-", "")  # only return the Date part
+        self.logger.info("NE Date found is : " + str(retText))
         return retText
 
     def run(self):

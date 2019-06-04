@@ -18,6 +18,8 @@ You can use any of these files for parsing or all of them together.
 # Usage :
 Just go through the file named main.py and change the settings as per the comments mentioned
 
+All the configurations are in the config.py file. So if you update the values there, then you should be fine
+
 Broadly speaking there are 3 scripts and you can choose to run any OR all of them
 * Step 1 is just setting up a logging function. So no need to do anything
 

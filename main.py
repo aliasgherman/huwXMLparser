@@ -1,49 +1,24 @@
 import subprocess
-from datetime import datetime
 
+import config as cfg
+from downloadAutobak import *
+from exportToExcel import *
 from loggersetup import *
 from parserxml import *
 
-ENVIRON_TEST = True
-
-if ENVIRON_TEST == True:
-    DATE_TO_PROCESS = "20190522"
-    HOST_LIST = [["10.200.163.7", "ftpuser", "PWD1"],
-                 ["10.200.163.15", "ftpuser", "PWD2"],
-                 ["10.200.163.230", "ftpuser", "PWD3"]]
-    LOCALFOLDER = "/home/aamhabiby/Desktop/resources/MIXEDSET"
-    if DATE_TO_PROCESS == "":
-        todayDate = datetime.now()
-        todayDate = "{:04d}{:02d}{:02d}".format(todayDate.year, todayDate.month, todayDate.day)
-    else:
-        todayDate = DATE_TO_PROCESS
-    EXPORT_PATH = "/home/aamhabiby/Desktop/resources/" + todayDate + "/"
-    ZIP_EXPORT_PATH = "/home/aamhabiby/Desktop/resources/" + todayDate + ".7z"
-    FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900", "DBS3900 IBS", "MICRO BTS3900"]
-    loc_7z = '7z'
-    loc_files = EXPORT_PATH
-    loc_export = ZIP_EXPORT_PATH
-    finalCommand = r'"{}" a "{}" -r "{}" -mx=9'.format(loc_7z, loc_export, loc_files)
+if cfg.DATE_TO_PROCESS == "":
+    todayDate = datetime.now()
+    todayDate = "{:04d}{:02d}{:02d}".format(todayDate.year, todayDate.month, todayDate.day)
 else:
-    DATE_TO_PROCESS = ""
-    HOST_LIST = [["10.200.163.7", "ftpuser", "PWD1"],
-                 ["10.200.163.15", "ftpuser", "PWD2"],
-                 ["10.200.163.230", "ftpuser", "PWD3"]]
-    LOCALFOLDER = "E:\\AAM\\cm\\"
-    if DATE_TO_PROCESS == "":
-        todayDate = datetime.now()
-        todayDate = "{:04d}{:02d}{:02d}".format(todayDate.year, todayDate.month, todayDate.day)
-    else:
-        todayDate = DATE_TO_PROCESS
-    EXPORT_PATH = "E:\\AAM\\exports\\" + todayDate + "\\"
-    ZIP_EXPORT_PATH = "E:\\AAM\\exports\\" + todayDate + ".7z"
-    FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900", "DBS3900 IBS", "MICRO BTS3900"]
-    loc_7z = 'C:\\Program Files\\7-Zip\\7z.exe'
-    loc_files = EXPORT_PATH
-    loc_export = ZIP_EXPORT_PATH
-    finalCommand = r'"{}" a "{}" -r "{}" -mx=9 -sdel'.format(loc_7z, loc_export, loc_files)
+    todayDate = cfg.DATE_TO_PROCESS
 
-# ARCHIVECOMMAND = '"C:\Program Files\7-Zip\7z.exe' a 20190531.7z -r 20190531 -mx=9 -sdel"
+HOST_LIST = cfg.HOST_LIST
+LOCALFOLDER = cfg.LOCALFOLDER
+EXPORT_PATH = os.path.join(cfg.EXPORT_PATH, todayDate)
+ZIP_EXPORT_PATH = os.path.join(cfg.ZIP_EXPORT_PATH, todayDate + ".7z")
+FOL_LIST = cfg.FOL_LIST
+finalCommand = r'"{}" a "{}" -r "{}" -mx=9'.format(cfg.loc_7z, ZIP_EXPORT_PATH, EXPORT_PATH)
+
 
 if __name__ == "__main__":
     '''
@@ -82,10 +57,11 @@ if __name__ == "__main__":
         # type : Type of the file. For now it can only be XMLDownloader.AUTOBAK. Later versions should support GExport files
     '''
 
-    #    downloader = XMLDownloader(myLogger, PATHFILTER=DATE_TO_PROCESS,
-    #                               HOST_LIST=HOST_LIST, FOL_LIST=FOL_LIST,
-    #                               LOCALFOLDER=LOCALFOLDER, type=XMLDownloader.AUTOBAK)
-    #    downloader.run()
+    if cfg.DOWNLOAD_FILES_FROM_FTP == True:
+        downloader = XMLDownloader(myLogger, PATHFILTER=todayDate,
+                                   HOST_LIST=HOST_LIST, FOL_LIST=FOL_LIST,
+                                   LOCALFOLDER=LOCALFOLDER, type=XMLDownloader.AUTOBAK)
+        downloader.run()
 
     '''
     # Step 3 : Parse the downloaded XML files and then export files to CSV or Import them to MongoDB or both
@@ -104,16 +80,16 @@ if __name__ == "__main__":
         # EXPORT_DIR : If EXPORT_CSV is set to True then this is the folder where we should export the files
     '''
 
-    parserXML = ParserXML(logger=myLogger, CUSTOM_DATE_FILTER=DATE_TO_PROCESS,
-                          EXPORT_CSV=True,
-                          INSERT_MONGO=False,
-                          DUMPDIR=LOCALFOLDER,
-
-                          EXPORT_DIR=EXPORT_PATH)
-    parserXML.run()
-
-    myLogger.info(finalCommand)
-    subprocess.call(finalCommand, shell=True)
+    if cfg.PARSE_FILES == True:
+        parserXML = ParserXML(logger=myLogger, CUSTOM_DATE_FILTER=todayDate,
+                              EXPORT_CSV=cfg.EXPORT_TO_CSV,
+                              INSERT_MONGO=cfg.EXPORT_TO_MONGO,
+                              DUMPDIR=LOCALFOLDER,
+                              EXPORT_DIR=EXPORT_PATH)
+        parserXML.run()
+        if cfg.EXPORT_TO_CSV == True:
+            myLogger.info(finalCommand)  # This is the command to combine the processed CSV files into a single 7z file
+            subprocess.call(finalCommand, shell=True)
 
     '''
     # Optional Step: Utility to export tables from MongoDB. Any previous tables can be exported as Excel file
@@ -140,7 +116,9 @@ if __name__ == "__main__":
 
     '''
 
-#    exporter = MongoToExcel(logger=myLogger, DBNAME="BTS3900", EXPORT_PATH=EXPORT_PATH,
-#                            TABLES_NEEDED=["NE"], DATE_COLUMN="AAMDATE", EXPORT_ALL_DATES=False,
-#                            COLUMNS_TO_DROP=['_id'], TABLE_FOR_MAXDATE="NE")
-#    exporter.run()
+    if cfg.EXPORT_FILES_FROM_MONGO == True:
+        exporter = MongoToExcel(logger=myLogger, DBNAME=cfg.EXPORT_FROM_DB, EXPORT_PATH=EXPORT_PATH,
+                                TABLES_NEEDED=cfg.TABLES_TO_EXPORT, DATE_COLUMN="AAMDATE",
+                                EXPORT_ALL_DATES=cfg.EXPORT_ALL_DATES,
+                                COLUMNS_TO_DROP=['_id'], TABLE_FOR_MAXDATE="TZ")
+        exporter.run()
