@@ -9,6 +9,8 @@ There are three types of xml files supported for parsing the xml
 
 You can use any of these files for parsing or all of them together.
 
+![A Sample Image of the Output CSV Folders]("out1.png")
+
 # Dependencies : 
 
 * pip install pandas
