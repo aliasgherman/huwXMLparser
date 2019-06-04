@@ -36,7 +36,7 @@ class XMLDownloader:
             mode = sftp.stat(remotepath).st_mode
             if S_ISDIR(mode):
                 try:
-                    os.mkdir(localpath)
+                    os.makedirs(localpath)
                 except OSError:  # dir exists
                     pass
                 self.get_r_portable(sftp, remotepath, localpath, preserve_mtime)
