@@ -34,6 +34,13 @@ You can use any of these files for parsing or all of them together.
 * pip install pymongo
 
 # Usage :
+
+### Summarized Version
+#### Configure your directories in the file config.py and then run main.py
+
+### Long Version
+#### Go through the parameter meaning in main.py (read through the comments) and then modify as per your requirement. The logs will be generated in the folder so that you can upload in case of any issues.
+
 Just go through the file named main.py and change the settings as per the comments mentioned
 
 All the configurations are in the config.py file. So if you update the values there, then you should be fine
