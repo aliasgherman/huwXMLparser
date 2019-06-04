@@ -8,19 +8,24 @@ There are three types of xml files supported for parsing the xml
 - NE GExport XML : These are inside the /opt/oss/server/var/fileint/cm/GExport but are in Folders like NE1231. These folders contain files named like ALL_NENAME_TIMESTAMP.xml.gz
 
 You can use any of these files for parsing or all of them together.
+
 # Example Export Images :
-Directories Created are based on the combination of files parsed. Any XML files (combination of 2G to 5G can be present).
+### Directories Created are based on the combination of files parsed. Any XML files (combination of 2G to 5G can be present).
 
 ![A Sample Image of the Output CSV Folders](out1.png)
 
-Second level is the folder name using the Software version of the NE in question.
+### Second level is the folder name using the Software version of the NE in question.
 
 ![A Sample Image of the Output CSV Folders](out2.png)
 
 
-Third level is the file names using MOs
+### Third level is the file names using MOs
 
 ![A Sample Image of the Output CSV Folders](out3.png)
+
+### A Sample export file opened in Spreadsheet editor
+
+![A Sample Image of the Output CSV Folders](out4.png)
 
 # Dependencies : 
 
