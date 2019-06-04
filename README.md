@@ -154,3 +154,8 @@ If you dont need to download the files, then just comment out the lines under St
                             COLUMNS_TO_DROP=['_id'], TABLE_FOR_MAXDATE="NE")
     exporter.run()
 ```
+
+# Help to grow
+Please report back any issues encountered. Any new type of files you would like this tool to process and any other suggestions for improvements.
+
+aliasgherman@gmail.com
