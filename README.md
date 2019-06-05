@@ -35,10 +35,13 @@ You can use any of these files for parsing or all of them together.
 
 # Usage :
 
-### Summarized Version
+### Alpha version : GUI Based
+With all dependencies installed, run python main_gui.py and select options as per the below documentation. The GUI is still in alpha stages so you can always use the scripting approach in main.py
+
+### Summarized Version (CLI based)
 #### Configure your directories in the file config.py and then run main.py
 
-### Long Version
+### Long Version (CLI based)
 #### Go through the parameter meaning in main.py (read through the comments) and then modify as per your requirement. The logs will be generated in the folder so that you can upload in case of any issues.
 
 Just go through the file named main.py and change the settings as per the comments mentioned
