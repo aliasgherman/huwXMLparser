@@ -13,8 +13,6 @@ class MongoToExcel:
         self.C_MAXDATE = ""
         self.EXPORT_PATH = EXPORT_PATH
         self.TABLES_NEEDED = TABLES_NEEDED
-        if len(self.TABLES_NEEDED) == 0:
-            self.TABLES_NEEDED = self.get_all_colls()
         self.TABLE_FOR_MAXDATE = TABLE_FOR_MAXDATE
         self.logger = logger
         self.EXPORT_ALL_DATES = EXPORT_ALL_DATES
@@ -24,6 +22,8 @@ class MongoToExcel:
             self.connStr = "mongodb://" + str(MONGO_USER) + ":" + str(MONGO_PWD) + "@" + str(MONGO_PORT) + "/"
         else:
             self.connStr = "mongodb://" + str(MONGO_PORT) + "/"
+        if len(self.TABLES_NEEDED) == 0:
+            self.TABLES_NEEDED = self.get_all_colls()
 
     def get_max_date_from_tz(self):
         try:
@@ -68,17 +68,24 @@ class MongoToExcel:
             return []
 
     def run(self):
-        MAXDATETZ = self.get_max_date_from_tz()
-        export_FILENAME = os.path.join(self.EXPORT_PATH, self.C_DBNAME + ".xlsx")
-        sCount = 0
-        with pd.ExcelWriter(export_FILENAME, engine='xlsxwriter',
-                            options={'strings_to_numbers': True}) as writer:
-            for tables in self.TABLES_NEEDED:
-                sCount = sCount + 1
-                df = self.get_coll_as_table(tables, MAXDATETZ)
+        try:
+            MAXDATETZ = self.get_max_date_from_tz()
+            export_FILENAME = os.path.join(self.EXPORT_PATH, self.C_DBNAME + ".xlsx")
+            if os.path.exists(self.EXPORT_PATH) == False:
+                os.makedirs(self.EXPORT_PATH)
 
-                df.to_excel(writer, sheet_name=str(sCount) + "_" + tables[:25], index=False)
-                # "Sheetname should be less than 32 for excel
-                if (sCount % 10) == 0:
-                    self.logger.info("Processed " + str(sCount) + " tables.")
-        self.logger.info("All tables processed. " + str(sCount))
+            sCount = 0
+            with pd.ExcelWriter(export_FILENAME, engine='xlsxwriter',
+                                options={'strings_to_numbers': True}) as writer:
+                for tables in self.TABLES_NEEDED:
+
+                    df = self.get_coll_as_table(tables, MAXDATETZ)
+                    if len(df) > 0:
+                        df.to_excel(writer, sheet_name=str(sCount) + "_" + tables[:25], index=False)
+                        sCount = sCount + 1
+                    # "Sheetname should be less than 32 for excel
+                    if (sCount % 10) == 0:
+                        self.logger.info("Processed " + str(sCount) + " tables.")
+            self.logger.info("All tables processed. " + str(sCount))
+        except Exception as e:
+            self.logger.error("An error occurred while trying to export tables from Mongo DB. " + str(e))

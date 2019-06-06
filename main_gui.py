@@ -10,6 +10,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1016, 917)
@@ -445,6 +446,16 @@ class Ui_MainWindow(object):
         self.labMongoUser.setText(_translate("MainWindow", "Mongo User (Usually Blank)"))
         self.labMongoPwd.setText(_translate("MainWindow", "Mongo Password (Usually Blank)"))
 
+    def __init__(self):
+        self.setupUi(MainWindow)
+        self.setupLogger()
+        self.assignFunctions()
+
+    def setupLogger(self):
+        loggingClass = LoggerSetup(TAG="XML_PARSER", MAX_FILE_SIZE=1024 * 1024 * 20, BACKUP_COUNT=20,
+                                   FILE_LOG_LEVEL=logging.DEBUG, CONSOLE_LOG_LEVEL=logging.DEBUG)
+        self.myLogger = loggingClass.run()
+
     def openFoldoerChooser(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -604,7 +615,7 @@ class Ui_MainWindow(object):
                     subprocess.call(finalCommand, shell=True)
 
         if self.chkExportFromMongo.isChecked() == True:
-            exporter = MongoToExcel(logger=myLogger, DBNAME=self.txtMongoDB, EXPORT_PATH=EXPORT_PATH,
+            exporter = MongoToExcel(logger=self.myLogger, DBNAME=self.txtMongoDB.toPlainText(), EXPORT_PATH=EXPORT_PATH,
                                     TABLES_NEEDED=TABLES_TO_EXPORT, DATE_COLUMN="AAMDATE",
                                     EXPORT_ALL_DATES=(self.chkExportLatestOnly.isChecked() == False),
                                     COLUMNS_TO_DROP=['_id'], TABLE_FOR_MAXDATE="TZ",
@@ -728,15 +739,9 @@ if __name__ == "__main__":
     from parserxml import *
     import subprocess
 
-    loggingClass = LoggerSetup(TAG="XML_PARSER", MAX_FILE_SIZE=1024 * 1024 * 20, BACKUP_COUNT=20,
-                               FILE_LOG_LEVEL=logging.DEBUG, CONSOLE_LOG_LEVEL=logging.DEBUG)
-    myLogger = loggingClass.run()
-
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    ui.myLogger = myLogger
-    ui.assignFunctions()
+
     MainWindow.show()
     sys.exit(app.exec_())
