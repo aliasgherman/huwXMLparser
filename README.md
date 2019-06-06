@@ -32,11 +32,14 @@ You can use any of these files for parsing or all of them together.
 * pip install pandas
 * pip install lxml
 * pip install pymongo
+* pip install PyQt5
 
 # Usage :
 
 ### Alpha version : GUI Based
 With all dependencies installed, run python main_gui.py and select options as per the below documentation. The GUI is still in alpha stages so you can always use the scripting approach in main.py
+
+GUI requires Qt5 installation as well.
 
 ### Summarized Version (CLI based)
 #### Configure your directories in the file config.py and then run main.py
