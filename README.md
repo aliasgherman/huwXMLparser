@@ -28,7 +28,7 @@ You can use any of these files for parsing or all of them together.
 ![A Sample Image of the Output CSV Folders](out4.png)
 
 # Dependencies : 
-
+Qt5 has to be installed (Check https://www.qt.io/download and download the Opensource version)
 * pip install pandas
 * pip install lxml
 * pip install pymongo
