@@ -17,8 +17,6 @@ LOCALFOLDER = "/home/aamhabiby/Desktop/resources/MIXEDSET"  # This is the folder
 
 EXPORT_PATH = "/home/aamhabiby/Desktop/resources/"  # This is the path where you want to export the CSV files (If the CSV export option is enabled)
 
-ZIP_EXPORT_PATH = "/home/aamhabiby/Desktop/resources/"  # This is the path where you want to compress all the CSV files and export as single archive
-
 FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900", "DBS3900 IBS",
             "MICRO BTS3900"]  # These are the folder names on the FTP servers where you have the XML files.
 

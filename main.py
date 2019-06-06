@@ -15,7 +15,7 @@ else:
 HOST_LIST = cfg.HOST_LIST
 LOCALFOLDER = cfg.LOCALFOLDER
 EXPORT_PATH = os.path.join(cfg.EXPORT_PATH, todayDate)
-ZIP_EXPORT_PATH = os.path.join(cfg.ZIP_EXPORT_PATH, todayDate + ".7z")
+ZIP_EXPORT_PATH = os.path.join(cfg.EXPORT_PATH, todayDate + ".7z")
 FOL_LIST = cfg.FOL_LIST
 finalCommand = r'"{}" a "{}" -r "{}" -mx=9'.format(cfg.loc_7z, ZIP_EXPORT_PATH, EXPORT_PATH)
 

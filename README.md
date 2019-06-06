@@ -9,6 +9,18 @@ There are three types of xml files supported for parsing the xml
 
 You can use any of these files for parsing or all of them together.
 
+# Dependencies : 
+* Qt5 has to be installed if you want to use the GUI. (Check https://www.qt.io/download and download the Opensource version)
+For main.py the QT5 dependency is irrelevant 
+* Mongo DB should be installed if you need support for inserting tables to Mongo / exporting from Mongo. It is recommended to get this free DB server
+
+* pip install pandas
+* pip install lxml
+* pip install pymongo
+* pip install PyQt5
+* pip install pysftp
+
+
 # Example Export Images :
 ### Directories Created are based on the combination of files parsed. Any XML files (combination of 2G to 5G can be present).
 
@@ -26,14 +38,6 @@ You can use any of these files for parsing or all of them together.
 ### A Sample export file opened in Spreadsheet editor
 
 ![A Sample Image of the Output CSV Folders](out4.png)
-
-# Dependencies : 
-Qt5 has to be installed (Check https://www.qt.io/download and download the Opensource version)
-* pip install pandas
-* pip install lxml
-* pip install pymongo
-* pip install PyQt5
-* pip install pysftp
 
 # Usage :
 
