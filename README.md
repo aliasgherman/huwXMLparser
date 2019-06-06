@@ -12,7 +12,7 @@ You can use any of these files for parsing or all of them together.
 # Dependencies : 
 * Qt5 has to be installed if you want to use the GUI. (Check https://www.qt.io/download and download the Opensource version)
 For main.py the QT5 dependency is irrelevant 
-* Mongo DB should be installed if you need support for inserting tables to Mongo / exporting from Mongo. It is recommended to get this free DB server
+* Mongo DB should be installed if you need support for inserting tables to Mongo / exporting from Mongo. It is recommended to get this free DB server (https://www.mongodb.com/what-is-mongodb)
 
 * pip install pandas
 * pip install lxml
