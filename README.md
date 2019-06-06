@@ -33,6 +33,7 @@ You can use any of these files for parsing or all of them together.
 * pip install lxml
 * pip install pymongo
 * pip install PyQt5
+* pip install pysftp
 
 # Usage :
 
