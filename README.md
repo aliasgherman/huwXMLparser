@@ -1,3 +1,9 @@
+# [WARNING WARNING]
+Please note that this script (branck = master) is feature complete for now. But this requires Qt if you want to use the GUI and CSV exports are generally very slow for large amount of Network Elements.
+So, a better alternate is WIP for the branck (master-flask-v1) which will export all parameters as a Sqlite database and is only relying on tools which DONOT require any admin rights for installation.
+
+Once this Flask based branck is fully tested, then it will be merged for project completion. Documents for flask branch not updted yet.
+
 # Simple Summary
 This set of scripts is used to export the 2G/3G/4G/5G Dumps from Huawei xml files
 The XML files are exported by U2000/U2020 on the ftp paths automatically
