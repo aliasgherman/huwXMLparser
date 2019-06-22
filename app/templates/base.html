@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  {% if title %}
+  <title>{{ title }} - XML Parser Portal</title>
+  {% else %}
+  <title>Welcome to XML Parser Portal</title>
+  {% endif %}
+
+  <!-- CSS  -->
+  <link href="/static/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="/static/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <style>
+    /* fallback */
+    @font-face {
+      font-family: 'Material Icons';
+      font-display: 'auto';
+      font-style: normal;
+      font-weight: 400;
+      src: local('Material Icons'),
+        local('MaterialIcons-Regular'),
+        url(/static/images/maticon.woff2) format('woff2');
+    }
+
+    .material-icons {
+      font-family: 'Material Icons';
+      font-display: 'auto';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      font-feature-settings: "liga";
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="navbar-fixed">
+      <nav>
+        <div class="nav-wrapper cyan darken-4">
+          <a href="#!" class="brand-logo white-text">TXP</a>
+          <ul class="right hide-on-med-and-down">
+            {% for pagelink in pagelinks %}
+            <li><a href="{{ pagelink.href }}" class="white-text">{{ pagelink.text}}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="section no-pad-bot" id="index-banner">
+      <div class="container">
+        <br><br>
+        <h1 class="header center amber-text">Telecom XML Dump Parser & Processor (TXP)</h1>
+        <div class="row center">
+          <h5 class="header col s12 light">Process xml dump files into database or csv formats. Audit parameters and
+            more.</h5>
+        </div>
+        <div class="row center">
+          <a href="https://github.com/aliasgherman/huwXMLparser" target="_blank" id="github-button"
+            class="btn-large waves-effect waves-light pink darken-4">Download Latest via GitHub</a>
+        </div>
+        <br><br>
+
+      </div>
+    </div>
+
+
+
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="page-footer orange lighten-1">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+          
+          <h5 class="white-text"><i class="material-icons">info</i>About App</h5>
+          <p class="grey-text text-lighten-4">This app is targetted for Telecom Engineers working on RAN equipment. The
+            app will allow to download, read and parse the xml files from the Network Elements. The target of this app
+            is that it should be installable without Admin rights and should also allow scripting for automated server
+            systems.</p>
+
+
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        Made by <div class="orange-text text-lighten-3">Ali Asgher Mansoor Habiby [aliasgherman@gmail.com] </div>
+        </div>
+      </div>
+  </footer>
+
+  <!--  Scripts-->
+  <script src="/static/js/materialize.js"></script>
+
+  <script>
+
+    window.addEventListener('load', () => {
+      M.AutoInit();
+      console.log("Ready function has been completed;");
+    });
+
+
+  </script>
+
+</body>
+
+</html>

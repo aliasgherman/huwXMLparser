@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="section">
+
+    <!--   Icon Section   -->
+    <div class="row">
+      <div class="col s18 m12">
+        <div class="icon-block">
+          <h2 class="center pink-text"><i class="material-icons">settings</i></h2>
+          <h5 class="center">Configure Parser to Run</h5>
+          <p class="orange-text darken-2">The zip file should contain the Date structure like YYYYMMDD either in the
+            folder
+            or in the Filenames. Other folders will be ignored. If you dont select a Datefilter parameter below, then we
+            will try to find a folder containing today's date in YYYYMMDD format and parse all files inside it.</p>
+
+          <form id="registerForm" method="POST" action="submitparams" enctype="multipart/form-data">
+
+            <div class="file-field input-field">
+              <div class="btn pink darken-2">
+                <span>Browse</span>
+                <input type="file" name="inputxml"/>
+              </div>
+
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text" placeholder="Attach Zip File containing XMLs" />
+              </div>
+            </div>
+
+            <div class="col s18 m12">
+              <div class="switch">
+                <label>
+                  Use a Custom Date Filter
+                  <input type="checkbox" name="datefiltercustom" checked="true">
+                  <span class="lever"></span>
+                  Use today's Date
+                </label>
+              </div>
+
+              <input name="customdate" type="number" min="20000000" max="21000000"
+                placeholder="Enter a custom date in format YYYYMMDD">
+
+            </div>
+
+
+            <div class="col s18 m12">
+              <div class="switch">
+                <label>
+                  Dont Export as Sqlite DB
+                  <input type="checkbox" name="exportasdb" checked="true">
+                  <span class="lever"></span>
+                  Export as Sqlite DB
+                </label>
+              </div>
+
+              <div class="switch">
+                <label>
+                  Dont Insert into MongoDB
+                  <input type="checkbox" name="inserttomongo">
+                  <span class="lever"></span>
+                  Insert into MongoDB
+                </label>
+              </div>
+
+            </div>
+            <div>
+              <button type="submit" class="btn btn-warning btn-lg">submitMe!</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

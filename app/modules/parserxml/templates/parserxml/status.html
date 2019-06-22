@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="section">
+
+        <!--   Icon Section   -->
+        <div class="row">
+            <div class="col s12 m4">
+                <div class="icon-block">
+                    <h2 class="center pink-text"><i class="material-icons">update</i></h2>
+                    <h5 class="center">Parser is {{ parserstatus }}</h5>
+
+                    <p class="light">Refresh page to see new
+                        progress. Restart the app if you think this is unexpected</p>
+                </div>
+            </div>
+
+            <div class="col s12 m4">
+                <div class="icon-block">
+                    <h2 class="center pink-text"><i class="material-icons">library_books</i></h2>
+                    <h5 class="center">Progress of Parser</h5>
+
+                    <div class="progress">
+                        <div class="determinate" style="width: {{ parserprogress }}%"></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col s12 m4">
+                <div class="icon-block">
+                    <h2 class="center pink-text"><i class="material-icons">settings</i></h2>
+                    <h5 class="center">Config of Parser</h5>
+
+                    <p class="dark">{{ parserconfig }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
