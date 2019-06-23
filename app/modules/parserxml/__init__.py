@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, abort, request
 import threading
+import shutil
 from jinja2 import TemplateNotFound
 import os
 from flask import Flask, flash, request, redirect, url_for
@@ -135,23 +136,18 @@ def getUploadedFile(file):
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         try:
-            if os.path.exists(UPLOAD_FOLDER) == False:
-                try:
-                    os.makedirs(UPLOAD_FOLDER)
-                except:
-                    print("Error creating upload folder")
-                    return -2
+            if os.path.exists(UPLOAD_FOLDER):
+                shutil.rmtree(
+                    UPLOAD_FOLDER)  # this is to make sure we delete earlier uploaded files to not process any old files
+            try:
+                os.makedirs(UPLOAD_FOLDER)
+            except:
+                print("Error creating upload folder.")
+                return -2
+
             filepath = os.path.join(UPLOAD_FOLDER, filename)
             file.save(filepath)
         except Exception as e:
             return -2
         return filepath
     return -2
-
-def extractzip(filename, targetdir = ZIP_EXTRACT_FOLDER):
-    try:
-        zr = ZipFile(filename, 'r')
-        zr.extractall(targetdir)
-        zr.close()
-    except Exception as e:
-        print("Exception occurred while extracting the zip file. " + str(e))

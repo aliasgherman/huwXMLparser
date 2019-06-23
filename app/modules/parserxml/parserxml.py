@@ -10,14 +10,15 @@
 #CONSIDER_DATEFILTERS = False
 
 import threading
+import gc
 import shutil
 import gzip
 import zipfile
 import os
 from collections import OrderedDict
 from datetime import datetime
-from io import StringIO
-import time
+
+#import time
 
 import pandas as pd
 from lxml import etree
@@ -56,10 +57,10 @@ class ParserXML(threading.Thread):
         self.CUSTOM_DATE_FILTER = CUSTOM_DATE_FILTER
         self.EXPORT_DB = EXPORT_DB
         self.INSERT_MONGO = INSERT_MONGO
-        self.EXPORT_DIR = EXPORT_DIR
+        self.EXPORT_DIR = os.path.join(EXPORT_DIR, 'exp')
         self.DUMPDIR = DUMPDIR
         self.statusStr = "Initialized"
-        self.loggerString = StringIO()
+        #self.loggerString = StringIO()
         self.progress = 0
         self.isZip = isZip #indicates if the DUMPDIR is a directory or just a zip file we need to extract
         if logger is None:
@@ -70,7 +71,7 @@ class ParserXML(threading.Thread):
         self.logger.info("Returning current status as per called function.")
         return self.progress, \
                self.statusStr, \
-               self.loggerString.getvalue(), \
+               " Custom logs can be here.", \
                { "Custom Date Filter" : self.CUSTOM_DATE_FILTER,
                  "Export to DB" : self.EXPORT_DB,
                  "Insert to Mongo" : self.INSERT_MONGO,
@@ -92,18 +93,18 @@ class ParserXML(threading.Thread):
         self.ch = logging.StreamHandler()
         self.ch.setLevel(logging.INFO)
 
-        self.sh = logging.StreamHandler()  #This is a stringIO based logger.
-        self.sh.setLevel(logging.INFO)
-        self.sh.setStream(self.loggerString)
+        #self.sh = logging.StreamHandler()  #This is a stringIO based logger.
+        #self.sh.setLevel(logging.INFO)
+        #self.sh.setStream(self.loggerString)
 
         formatter = logging.Formatter('[ %(asctime)s ] [ %(name)s ][ %(levelname)s ] %(message)s')
         self.ch.setFormatter(formatter)
-        self.sh.setFormatter(formatter)
+        #self.sh.setFormatter(formatter)
         self.fh.setFormatter(formatter)
 
         self.myLogger.addHandler(self.ch)
         self.myLogger.addHandler(self.fh)
-        self.myLogger.addHandler(self.sh)
+        #self.myLogger.addHandler(self.sh)
         return self.myLogger
 
     def getFileType(self, root, vendor=VENDOR_HUW, filetype=FILETYPE_XML):
@@ -290,30 +291,29 @@ class ParserXML(threading.Thread):
                     df = pd.DataFrame()
                     df = df.from_records(currTab)
 
-                    df[F_VERSION] = T_VERSION
-                    df[F_TECHNIQUE] = T_TECHNIQUE
-                    df[F_BTSTYPE] = T_BTSTYPE
-                    # This special processing is for GExport type files. The MO names in such files are like ACL_BSC6910UMTS so we only need ACL from this output
-                    # moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
-                    moname = currClass.upper().split("_")
-                    if len(moname) == 2:
-                        if moname[0][: len(moname[1])] == moname[1]:
-                            moname = moname[0][len(moname[1]):]
-                        else:
-                            moname = moname[0]
-                    else:
-                        moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
-
-                    df[F_MONAME] = moname
-                    df[F_FILENAME] = filename
-                    df[F_NENAME] = CURRNENAME
-                    df[F_DATE] = CURRDATE
-                    CUSTOM_COL_COUNT = 7
-                    cols = df.columns.tolist()  # we want to move the custom added 5 columns to the beginning of the frame
-                    cols = cols[-CUSTOM_COL_COUNT:] + cols[:-CUSTOM_COL_COUNT]
-                    df = df[cols]  # rearrange the columns so that custom columns are in the beginning
-
                     if len(df) > 0:
+                        df[F_VERSION] = T_VERSION
+                        df[F_TECHNIQUE] = T_TECHNIQUE
+                        df[F_BTSTYPE] = T_BTSTYPE
+                        # This special processing is for GExport type files. The MO names in such files are like ACL_BSC6910UMTS so we only need ACL from this output
+                        # moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
+                        moname = currClass.upper().split("_")
+                        if len(moname) == 2:
+                            if moname[0][: len(moname[1])] == moname[1]:
+                                moname = moname[0][len(moname[1]):]
+                            else:
+                                moname = moname[0]
+                        else:
+                            moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
+
+                        df[F_MONAME] = moname
+                        df[F_FILENAME] = filename
+                        df[F_NENAME] = CURRNENAME
+                        df[F_DATE] = CURRDATE
+                        CUSTOM_COL_COUNT = 7
+                        cols = df.columns.tolist()  # we want to move the custom added 5 columns to the beginning of the frame
+                        cols = cols[-CUSTOM_COL_COUNT:] + cols[:-CUSTOM_COL_COUNT]
+                        df = df[cols]  # rearrange the columns so that custom columns are in the beginning
                         if self.EXPORT_DB == True:
                             newDir = os.path.join(exportdir, T_BTSTYPE, T_VERSION)
                             newFileName = os.path.join(newDir, T_BTSTYPE + ".db")
@@ -329,6 +329,8 @@ class ParserXML(threading.Thread):
                             self.df_to_mongo(T_BTSTYPE, moname, df)
                     else:
                         pass
+
+                    del (df)
 
         except Exception as e:
             self.logger.error("An Exception occurred in the main export_all_tables function. " + str(e))
@@ -353,12 +355,10 @@ class ParserXML(threading.Thread):
             if filePart.lower().find("gexport") > -1:  # this is the gexport dump
                 # gexport naming is like "GExport_BSC01_IPADDRESS_TIMESTAMP.xml"
                 totParts = filePart.split("_")
-                lenParts = len(totParts)
                 nename = "_".join(totParts[1:len(totParts) - 2])
                 return nename
             elif filePart.lower().find("all") > -1:  # this maybe of type ALL_LSI19191_123123.xml
                 totParts = filePart.split("_")
-                lenParts = len(totParts)
                 nename = "_".join(totParts[1:len(totParts) - 1])
         return nename
 
@@ -450,6 +450,8 @@ class ParserXML(threading.Thread):
                                     self.df_to_mongo(NEVERSION[2], currClass, df)
                             else:
                                 pass
+
+                            del (df)
                                 # print("0 length class not exported.", currClass)
         except Exception as e:
             self.logger.error("An exception occurred in the export_autobackup_data function. " + str(e))
@@ -493,61 +495,85 @@ class ParserXML(threading.Thread):
         return retText
 
     def run(self):
-        tempDate = datetime.now()
-        tempDateFilter = "{:04d}{:02d}{:02d}".format(tempDate.year, tempDate.month,
-                                                     tempDate.day)  # this is to only extract the CFG xml files inside today's AUTOBAK folder
+        try:
+            tempDate = datetime.now()
+            tempDateFilter = "{:04d}{:02d}{:02d}".format(tempDate.year, tempDate.month,
+                                                         tempDate.day)  # this is to only extract the CFG xml files inside today's AUTOBAK folder
 
-        MAIN_DIR = self.DUMPDIR
-
-
-        if (self.isZip == True) or (os.path.split(self.DUMPDIR)[1].lower().find(".zip") > -1):
-            #this seems to be a zip file so try to extract it
-            self.logger.info("This seems to be a zip file (either by explicit option) or by the directory name split. Trying to unzip first.")
+            MAIN_DIR = self.DUMPDIR
 
             try:
-                zr = zipfile.ZipFile(self.DUMPDIR, 'r')
-                extPath = os.path.join( os.path.split(self.DUMPDIR)[0] , "tmp")
-                zr.extractall( extPath )
-                zr.close()
-                MAIN_DIR = extPath
-                self.logger.info("Extracted zip path is now : " + str(extPath))
-            except Exception as e:
-                self.logger.error("An error ocurred while trying to extract dumpdir as a zip file. Exiting. " + str(e))
-                return
+                self.logger.info("Trying to remove the export directory now.")
+                shutil.rmtree(self.EXPORT_DIR)
+            except:
+                self.logger.info("Export directory removal before actual export process failed.")
 
-
-        if self.CUSTOM_DATE_FILTER.strip() != "":  # only for testing in order to add any xml file regardless of the date
-            tempDateFilter = self.CUSTOM_DATE_FILTER
-            self.logger.warning("Date filter is overridden. Will use this filter for directory. " + str(tempDateFilter))
-        self.progress = 2
-
-        self.gunzip_all(MAIN_DIR, dirFilter=tempDateFilter, fileFilter="",
-                        extensionFilter=".gz")  # first gunzip all the gz files in all directories.
-        self.progress += 5
-        totFiles = self.getListOfFiles(MAIN_DIR, dirFilter=tempDateFilter, fileFilter="", extensionFilter=".xml")
-        self.logger.info("Total files to be processed are : " + str(len(totFiles)))
-        processedFiles = 0
-        for f in totFiles:
-            tree1 = etree.parse(f)
-            root1 = tree1.getroot()
-            # print(getFileType(root1))
-            # print(getneversion(root1))
-            self.logger.info("Starting File " + f)
-            self.export_all_tables(root=root1, exportdir=self.EXPORT_DIR, filename=f)
-            processedFiles += 1
-            self.progress = (100 * processedFiles / (len(totFiles) + 1)) * 0.9 + 0.1
-        self.statusStr = "Idle"
-
-        if (self.isZip == True) or (os.path.split(self.DUMPDIR)[1].lower().find(".zip") > -1):
-            if (os.path.exists(MAIN_DIR)):
-                self.logger.info("Will now remove the processed directory as we believe it was a result of ZIP file extraction.")
+            if (self.isZip == True) or (os.path.split(self.DUMPDIR)[1].lower().find(".zip") > -1):
+                #this seems to be a zip file so try to extract it
+                self.logger.info("This seems to be a zip file (either by explicit option) or by the directory name split. Trying to unzip first.")
                 try:
-                    shutil.rmtree(MAIN_DIR)
+                    zr = zipfile.ZipFile(self.DUMPDIR, 'r')
+                    extPath = os.path.join( os.path.split(self.DUMPDIR)[0] , "tmp")
+                    if os.path.exists(extPath):
+                        shutil.rmtree(extPath)
+                    zr.extractall( extPath )
+                    zr.close()
+                    del(zr)
+                    MAIN_DIR = extPath
+                    self.logger.info("Extracted zip path is now : " + str(extPath))
                 except Exception as e:
-                    self.logger.error("Unable to remove the directory created by zip process. " + str(e))
+                    self.logger.error("An error ocurred while trying to extract dumpdir as a zip file. Exiting. " + str(e))
+                    return
 
-        self.progress = 100
-        self.logger.info("All files have been processed.")
+
+            if self.CUSTOM_DATE_FILTER.strip() != "":  # only for testing in order to add any xml file regardless of the date
+                tempDateFilter = self.CUSTOM_DATE_FILTER
+                self.logger.warning("Date filter is overridden. Will use this filter for directory. " + str(tempDateFilter))
+            self.progress = 2
+
+            totFiles = self.getListOfFiles(MAIN_DIR, dirFilter=tempDateFilter,
+                                           fileFilter=tempDateFilter, extensionFilter=".gz",
+                                           filterType="or") # We will scan only all .gz files
+                                                            # matching the filters for date in directories
+
+            totalFiles = len(totFiles)
+            processedFiles = 0
+            self.logger.info("Total files to be processed are : " + str(totalFiles))
+            for singleFile in totFiles:
+                f = self.un_gzip(singleFile)
+                if os.path.isfile(f): #seems that the gunzip extraction was successful so follow the rabit
+                    tree1 = etree.parse(f)
+                    root1 = tree1.getroot()
+                    self.logger.info("Processing file number ({:03d}/{:03d})".format(processedFiles, totalFiles))
+                    self.export_all_tables(root=root1, exportdir=self.EXPORT_DIR, filename=f)
+                    processedFiles += 1
+                    self.progress = 100 * processedFiles / totalFiles
+                    self.statusStr = "({:03d}/{:03d})".format(processedFiles, totalFiles)
+                    try:
+                        os.remove(f)
+                    except Exception as e:
+                        self.logger.error("Error removing the file : " + f + ". " + str(e))
+                    del(tree1)
+                    del(root1)
+                    gc.collect()
+
+            if (self.isZip == True) or (os.path.split(self.DUMPDIR)[1].lower().find(".zip") > -1):
+                if os.path.exists(MAIN_DIR):
+                    self.logger.info("Will now remove the processed directory as we believe it was a result of ZIP file extraction.")
+                    try:
+                        shutil.rmtree(MAIN_DIR)
+                    except Exception as e:
+                        self.logger.error("Unable to remove the directory created by zip process. " + str(e))
+            self.progress = 100
+            self.status = "Idle"
+            self.logger.info("All files have been processed.")
+            self.ch.close()
+            self.fh.close()
+            del (self.logger)
+            gc.collect()
+        except Exception as e:
+            self.logger.error("An exception occurred while running the main run function. Exiting the thread now. "
+                              "Please make sure the delete the uploaded files and extracted files before next operation.")
 
     def un_gzip(self, filename):
         try:
@@ -558,8 +584,13 @@ class ParserXML(threading.Thread):
             output.write(s)
             output.close()
             self.logger.info("Extracted a gz file " + filename)
+            del(input)
+            del(s)
+            del(output)
+            return filename[:-3]
         except Exception as e:
             self.logger.info("Failure in gzip extraction of " + filename)
+            return -1
 
     def df_to_mongo(self, dbname, collname, df, host="localhost", port=27017):
         try:
@@ -571,20 +602,18 @@ class ParserXML(threading.Thread):
         except Exception as e:
             self.logger.error("Exception occurred inserting data to Mongo db" + str(e))
 
-    def gunzip_all(self, dirName, dirFilter, fileFilter, extensionFilter):
+    def gunzip_all(self, dirName, dirFilter, fileFilter, extensionFilter, filterType="and"):
         try:
-            tempDate = datetime.now()
-            tempDateFilter = "{:04d}{:02d}{:02d}".format(tempDate.year, tempDate.month,
-                                                         tempDate.day)  # this is to only extract the CFG xml files inside today's AUTOBAK folder
             self.logger.info(
                 "The template for gunzip will be " + dirFilter + " and " + fileFilter + " and " + extensionFilter)
             for files in self.getListOfFiles(dirName=dirName, dirFilter=dirFilter,
-                                             fileFilter=fileFilter, extensionFilter=extensionFilter):
+                                             fileFilter=fileFilter, extensionFilter=extensionFilter,
+                                             filterType=filterType):
                 self.un_gzip(files)
         except Exception as e:
             self.logger.error("Exception occurred in gunzip_all function." + str(e))
 
-    def getListOfFiles(self, dirName, dirFilter="", fileFilter="", extensionFilter=".xml"):
+    def getListOfFiles(self, dirName, dirFilter="", fileFilter="", extensionFilter=".xml", filterType="and"):
         # create a list of file and sub directories
         # names in the given directory
         try:
@@ -597,32 +626,40 @@ class ParserXML(threading.Thread):
                 # If entry is a directory then get the list of files in this directory
                 if os.path.isdir(fullPath):
                     allFiles = allFiles + self.getListOfFiles(fullPath, dirFilter=dirFilter, fileFilter=fileFilter,
-                                                              extensionFilter=extensionFilter)
+                                                              extensionFilter=extensionFilter, filterType=filterType)
                 else:
                     # We will check for three conditions
                     # filename contains filefilter
                     # file extension matches the extension provided
                     # directory contains the directory filter
                     pathName, fileName = os.path.split(fullPath)
-                    selecFilter = 0
+                    ffilt = 0
+                    dfilt = 0
+                    efilt = 0
+
                     if fileFilter != "":
                         if (fileName.lower().find(fileFilter.lower()) > -1):
-                            selecFilter = selecFilter + 1
+                            ffilt = 1
                     else:
-                        selecFilter = selecFilter + 1
+                        ffilt = 1
                     if dirFilter != "":
                         if (pathName.lower().find(dirFilter.lower()) > -1):
-                            selecFilter = selecFilter + 1
+                            dfilt = 1
                     else:
-                        selecFilter = selecFilter + 1
+                        dfilt = 1
                     if extensionFilter != "":
                         if (fileName[-len(extensionFilter):].lower() == extensionFilter.lower()):
-                            selecFilter = selecFilter + 1
+                            efilt = 1
                     else:
-                        selecFilter = selecFilter + 1
+                        efilt = 1
 
-                    if selecFilter == 3:  # All three conditions met (or were not required)
-                        allFiles.append(fullPath)
+                    if filterType == "and":
+                        if (ffilt == 1) and (dfilt == 1) and (efilt == 1):
+                            allFiles.append(fullPath)
+                    else:
+                        if ( (ffilt == 1) or (dfilt == 1) ) and (efilt == 1):
+                            allFiles.append(fullPath)
+
             return allFiles
         except Exception as e:
             self.logger.error("An error occurred while exploring the directories (getallfiles) " + str(e))
