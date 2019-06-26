@@ -299,10 +299,11 @@ class ParserXML(threading.Thread):
                         # moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
                         moname = currClass.upper().split("_")
                         if len(moname) == 2:
-                            if moname[0][: len(moname[1])] == moname[1]:
-                                moname = moname[0][len(moname[1]):]
-                            else:
-                                moname = moname[0]
+                            if moname[0][: len(moname[1])] == moname[1]: #ALMCORRSHLD eNodeB
+                                if len(moname[0][len(moname[1]):].strip()) > 0: #whatif it was ENODEB_ENODEB. 
+                                    moname = moname[0][len(moname[1]):].strip()
+                                else:
+                                    moname = moname[0] #so we will keep to ENODEB
                         else:
                             moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
 
