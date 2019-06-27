@@ -304,6 +304,8 @@ class ParserXML(threading.Thread):
                                     moname = moname[0][len(moname[1]):].strip()
                                 else:
                                     moname = moname[0] #so we will keep to ENODEB
+                            else:
+                                moname = moname[0] #so we will keep to ENODEB
                         else:
                             moname = currClass.strip().replace(" ", "").replace(temp[2], "").replace("_", "")
 
