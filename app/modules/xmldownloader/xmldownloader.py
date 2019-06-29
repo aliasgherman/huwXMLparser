@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 from stat import S_ISDIR, S_ISREG
+import logging
+from logging.handlers import RotatingFileHandler
 
 import pysftp
 
@@ -14,9 +16,9 @@ class XMLDownloader:
     GEXPORT = 2
     NEEXPORT = 3
 
-    def __init__(self, logger,  HOST_LIST, FOL_LIST, LOCALFOLDER, type=AUTOBAK, PATHFILTER = ""):
-        self.logger = logger
-        self.logger.warn(
+    def __init__(self,  HOST_LIST, FOL_LIST, LOCALFOLDER, type=AUTOBAK, PATHFILTER = ""):
+        self.logger = self.setupLogger()
+        self.logger.warning(
             "Please note that this utility does not use hostkeys to verify the hosts. If this is insecure for "
             "your setup, then kindly update the code or submit a feature request.")
         self.cnopts = pysftp.CnOpts()
@@ -28,6 +30,36 @@ class XMLDownloader:
         self.type = type		
         if self.PATHFILTER.strip() == "":
             self.PATHFILTER = DIRFILTER
+
+    def setupLogger(self):
+        '''
+        Just sets up the logger and returns the logger instance which was setup with the init function.
+
+        :return: logger instance
+        '''
+        LOG_TAG = 'PARSER_XML'
+        self.myLogger = logging.getLogger(LOG_TAG )
+        self.myLogger.setLevel(logging.DEBUG)
+        self.fh = RotatingFileHandler(LOG_TAG  + ".log", 'a', maxBytes=20*1024*1024,
+                                      backupCount=20)
+        self.fh.setLevel(logging.INFO)
+        self.ch = logging.StreamHandler()
+        self.ch.setLevel(logging.INFO)
+
+        #self.sh = logging.StreamHandler()  #This is a stringIO based logger.
+        #self.sh.setLevel(logging.INFO)
+        #self.sh.setStream(self.loggerString)
+
+        formatter = logging.Formatter('[ %(asctime)s ] [ %(name)s ][ %(levelname)s ] %(message)s')
+        self.ch.setFormatter(formatter)
+        #self.sh.setFormatter(formatter)
+        self.fh.setFormatter(formatter)
+
+        self.myLogger.addHandler(self.ch)
+        self.myLogger.addHandler(self.fh)
+        #self.myLogger.addHandler(self.sh)
+        return self.myLogger
+
 
     def get_r_portable(self, sftp, remotedir, localdir, preserve_mtime=False):
         for entry in sftp.listdir(remotedir):

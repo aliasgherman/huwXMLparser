@@ -6,7 +6,7 @@ import os
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from zipfile import ZipFile
-from .parserxml import  ParserXML
+from .parserxml import ParserXML
 
 UPLOAD_FOLDER = 'uploadedfiles' #this is the folder where we will copy our uploaded files
 ZIP_EXTRACT_FOLDER = 'zipextract' #this is the folder where we will extract our zip files
@@ -115,7 +115,7 @@ def submittedForm():
             else:
                 param_INSERTMONGO = False
             if (param_INSERTMONGO == True) or (param_EXPORTASDB == True):
-                parser = ParserXML(logger=None, name=PARSERTHREADNAME, CUSTOM_DATE_FILTER=param_DATEFILTER,
+                parser = ParserXML(name=PARSERTHREADNAME, CUSTOM_DATE_FILTER=param_DATEFILTER,
                                    DUMPDIR=str(retPath), EXPORT_DIR=ZIP_EXTRACT_FOLDER,
                                    EXPORT_DB=param_EXPORTASDB, INSERT_MONGO=param_INSERTMONGO, isZip=True)
                 parser.start()

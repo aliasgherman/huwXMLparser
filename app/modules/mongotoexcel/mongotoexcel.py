@@ -6,18 +6,15 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 class MongoToExcel:
-    def __init__(self, logger, DBNAME, EXPORT_PATH, TABLES_NEEDED=[], DATE_COLUMN="AAMDATE",
-                 COLUMNS_TO_DROP=['id'], DATEVALUE="",
+    def __init__(self, DBNAME, EXPORT_PATH, TABLES_NEEDED, DATE_COLUMN="AAMDATE",
+                 DATEVALUE="",
                  MONGO_USER="", MONGO_PWD="", MONGO_PORT="localhost:27017"):
         self.C_DBNAME = DBNAME
         self.C_DATEPARAM = DATE_COLUMN  # the column which contains date of the table xml
-        self.C_COLSTODROP = COLUMNS_TO_DROP
+        self.C_COLSTODROP = ['id']
         self.EXPORT_PATH = EXPORT_PATH
         self.TABLES_NEEDED = TABLES_NEEDED
-        if logger is None:
-            self.logger =self.setupLogger()
-        else:
-            self.logger = logger
+        self.logger =self.setupLogger()
         self.DATEVALUE = DATEVALUE
         self.UNKNOWN_MAX_DATE = -1
         # mongodb://[username:password@]host1[:port1]

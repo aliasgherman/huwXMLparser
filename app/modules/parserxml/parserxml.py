@@ -49,22 +49,26 @@ class ParserXML(threading.Thread):
     currStatus = 0
     statusStr = "Idle"
 
-    def __init__(self, logger, name, CUSTOM_DATE_FILTER="", EXPORT_DB=True, INSERT_MONGO=False,
+    def __init__(self, name, CUSTOM_DATE_FILTER="", EXPORT_DB=True, INSERT_MONGO=False,
                  DUMPDIR="/home/aamhabiby/Desktop/resources/TEST/", EXPORT_DIR="/home/aamhabiby/Desktop/resources/",
                  isZip=False):
-        super().__init__(name=name)
-        self.logger = logger
+        super().__init__(name=name) #required as we are using a Thread class
+        self.logger = self.setupLogger()
         self.CUSTOM_DATE_FILTER = CUSTOM_DATE_FILTER
         self.EXPORT_DB = EXPORT_DB
         self.INSERT_MONGO = INSERT_MONGO
-        self.EXPORT_DIR = os.path.join(EXPORT_DIR, 'exp')
+        temp = datetime.now()
+        self.EXPORT_DIR = os.path.join(EXPORT_DIR,
+                                       "{:04d}{:02d}{:02d}_{:02d}{:02d}".format(temp.year,
+                                                                                temp.month,
+                                                                                temp.day,
+                                                                                temp.hour,
+                                                                                temp.minute))
         self.DUMPDIR = DUMPDIR
         self.statusStr = "Initialized"
         #self.loggerString = StringIO()
         self.progress = 0
         self.isZip = isZip #indicates if the DUMPDIR is a directory or just a zip file we need to extract
-        if logger is None:
-            self.logger = self.setupLogger()
         self.logger.info("Initialized a new Parser object. Name of the thread is " + name)
 
     def status(self):
@@ -505,11 +509,12 @@ class ParserXML(threading.Thread):
 
             MAIN_DIR = self.DUMPDIR
 
-            try:
-                self.logger.info("Trying to remove the export directory now.")
-                shutil.rmtree(self.EXPORT_DIR)
-            except:
-                self.logger.info("Export directory removal before actual export process failed.")
+            # Not removing the export directory means, that in case of SQL DB, the files will be appended with new values.
+            #try:
+            #    self.logger.info("Trying to remove the export directory now.")
+            #    shutil.rmtree(self.EXPORT_DIR)
+            #except:
+            #    self.logger.info("Export directory removal before actual export process failed.")
 
             if (self.isZip == True) or (os.path.split(self.DUMPDIR)[1].lower().find(".zip") > -1):
                 #this seems to be a zip file so try to extract it
@@ -545,9 +550,9 @@ class ParserXML(threading.Thread):
             for singleFile in totFiles:
                 f = self.un_gzip(singleFile)
                 if os.path.isfile(f): #seems that the gunzip extraction was successful so follow the rabit
+                    self.logger.info("Processing file number ({:03d}/{:03d})".format(processedFiles, totalFiles))
                     tree1 = etree.parse(f)
                     root1 = tree1.getroot()
-                    self.logger.info("Processing file number ({:03d}/{:03d})".format(processedFiles, totalFiles))
                     self.export_all_tables(root=root1, exportdir=self.EXPORT_DIR, filename=f)
                     processedFiles += 1
                     self.progress = 100 * processedFiles / totalFiles
