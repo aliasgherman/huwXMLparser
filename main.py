@@ -33,7 +33,11 @@ if __name__ == "__main__":
                               EXPORT_DB=cfg.EXPORT_TO_SQLDB,
                               INSERT_MONGO=cfg.EXPORT_TO_MONGO,
                               DUMPDIR=cfg.LOCALFOLDER,
-                              EXPORT_DIR=cfg.EXPORT_PATH, name="ParserXMLAuto")
+                              EXPORT_DIR=cfg.EXPORT_PATH,
+                              merge_versions=cfg.MERGE_VERSIONS,
+                              EXPORT_CSV=cfg.EXPORT_AS_CSV,
+                              name="ParserXMLAuto")
+
         parserXML.start() #this is a thread so we will call start method (not run)
 
 

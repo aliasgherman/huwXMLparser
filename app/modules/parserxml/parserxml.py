@@ -1,14 +1,3 @@
-# DUMPDIR = "/home/aamhabiby/Desktop/resources/TEST/"
-# EXPORT_DIR = "/home/aamhabiby/Desktop/resources/"
-# CONSIDER_DATEFILTERS = False
-# EXPORT_DB = True
-# INSERT_MONGO = False
-# CUSTOM_DATE_FILTER_FILE = "2019-05-22"
-# CUSTOM_DATE_FILTER_DIR = "20190522"
-#DUMPDIR = "E:\\AAM\\TEST"
-#EXPORT_DIR = "E:\\AAM\\TEST"
-#CONSIDER_DATEFILTERS = False
-
 import threading
 import gc
 import shutil
@@ -49,9 +38,9 @@ class ParserXML(threading.Thread):
     currStatus = 0
     statusStr = "Idle"
 
-    def __init__(self, name, CUSTOM_DATE_FILTER="", EXPORT_DB=True, INSERT_MONGO=False,
+    def __init__(self, name, CUSTOM_DATE_FILTER="", EXPORT_DB=True, EXPORT_CSV=True, INSERT_MONGO=False,
                  DUMPDIR="/home/aamhabiby/Desktop/resources/TEST/", EXPORT_DIR="/home/aamhabiby/Desktop/resources/",
-                 isZip=False):
+                 isZip=False, merge_versions=False):
         super().__init__(name=name) #required as we are using a Thread class
         self.logger = self.setupLogger()
         self.CUSTOM_DATE_FILTER = CUSTOM_DATE_FILTER
@@ -69,6 +58,8 @@ class ParserXML(threading.Thread):
         #self.loggerString = StringIO()
         self.progress = 0
         self.isZip = isZip #indicates if the DUMPDIR is a directory or just a zip file we need to extract
+        self.merge_versions = merge_versions
+        self.EXPORT_CSV = EXPORT_CSV
         self.logger.info("Initialized a new Parser object. Name of the thread is " + name)
 
     def status(self):
@@ -237,8 +228,10 @@ class ParserXML(threading.Thread):
                     #self.logger.info("Error while trying to add non-existent column " + str(e))
             try:
                 df.to_sql(name=moname, con=conn, if_exists="append", index=False)
-                #df.to_csv("/home/aamhabiby/Desktop/resources/t_" + moname + "csv", index=False)
                 conn.close()
+                if self.EXPORT_CSV == True:
+                    df.to_csv(os.path.join(os.path.split(newFileName)[0], moname + ".csv"), index=False, mode="a+")
+
             except ValueError as e:
                 self.logger.error("Value Error occurred exporting " + moname + " to the database " + newFileName + ". " + str(e))
         except Exception as e:
@@ -322,7 +315,10 @@ class ParserXML(threading.Thread):
                         cols = cols[-CUSTOM_COL_COUNT:] + cols[:-CUSTOM_COL_COUNT]
                         df = df[cols]  # rearrange the columns so that custom columns are in the beginning
                         if self.EXPORT_DB == True:
-                            newDir = os.path.join(exportdir, T_BTSTYPE, T_VERSION)
+                            if self.merge_versions == False: #If merge_versions is true then we will create single DB file for different versions but same Object like BTS3900 etc
+                                newDir = os.path.join(exportdir, T_BTSTYPE, T_VERSION)
+                            else:
+                                newDir = os.path.join(exportdir, T_BTSTYPE)
                             newFileName = os.path.join(newDir, T_BTSTYPE + ".db")
                             if not os.path.exists(newDir):
                                 try:
@@ -443,7 +439,10 @@ class ParserXML(threading.Thread):
                                 df = df[cols]
 
                                 if (self.EXPORT_DB == True):
-                                    newDir = os.path.join(exportdir, NEVERSION[2], NEVERSION[0])
+                                    if self.merge_versions == False:
+                                        newDir = os.path.join(exportdir, NEVERSION[2], NEVERSION[0])
+                                    else:
+                                        newDir = os.path.join(exportdir, NEVERSION[2])
                                     newFileName = os.path.join(newDir,  NEVERSION[2] + ".db")
                                     if not os.path.exists(newDir):
                                         try:
@@ -674,9 +673,9 @@ class ParserXML(threading.Thread):
             return []
 
 #To test the script, below can be used
-#a = ParserXML(logger=None, CUSTOM_DATE_FILTER="20190522",
+#a = ParserXML(CUSTOM_DATE_FILTER="20190522", EXPORT_CSV=True, EXPORT_DB=True, merge_versions=True,
 #              DUMPDIR="/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip",
-#              EXPORT_DIR="/home/aamhabiby/Desktop/resources/")
+#              EXPORT_DIR="/home/aamhabiby/Desktop/resources/", name="parser_local")
 #a.start()
 #time.sleep(5)
 #print(a.status())

@@ -52,6 +52,11 @@ FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900
 #Step 3, Set to True if you want your script to Export the results as a DB file which can be opened easily using
 # SQL DB Explorer
 EXPORT_TO_SQLDB = True
+MERGE_VERSIONS = True #This will merge the different software versions into single file if Home object is the same. (
+                      # like two RNCs with different versions will be combined in a single DB file and same CSV appended
+EXPORT_AS_CSV = True # It will export CSV files IF AND ONLY IF the Export to SQLDB is also selected. CSV will be simply
+                     # appended on one another so if for some reason the objects have different parameters
+                     # then the file will be useless. SQL DB is still preferrable.
 EXPORT_TO_MONGO = False  # It is preferred to load all files in Mongo as you can then perform Consistency checks,
 # Parameter Change tracking etc etc
 
