@@ -5,7 +5,7 @@ from datetime import datetime
 from app.modules.xmldownloader import *
 from app.modules.parserxml import *
 from app.modules.mongotoexcel import *
-
+from app.modules import parserxml_parallel
 
 if cfg.DATE_TO_PROCESS == "":
     todayDate = datetime.now()
@@ -29,16 +29,18 @@ if __name__ == "__main__":
 
 
     if cfg.PARSE_FILES == True:
-        parserXML = ParserXML(CUSTOM_DATE_FILTER=todayDate,
-                              EXPORT_DB=cfg.EXPORT_TO_SQLDB,
-                              INSERT_MONGO=cfg.EXPORT_TO_MONGO,
-                              DUMPDIR=cfg.LOCALFOLDER,
-                              EXPORT_DIR=cfg.EXPORT_PATH,
-                              merge_versions=cfg.MERGE_VERSIONS,
-                              EXPORT_CSV=cfg.EXPORT_AS_CSV,
-                              name="ParserXMLAuto")
-
-        parserXML.start() #this is a thread so we will call start method (not run)
+        logger = parserxml_parallel.setupLogger()
+        ret_params = parserxml_parallel.initialize(logger=logger, CUSTOM_DATE_FILTER=todayDate,
+                               EXPORT_DB=cfg.EXPORT_TO_SQLDB,
+                               INSERT_MONGO=cfg.EXPORT_TO_MONGO,
+                               DUMPDIR=cfg.LOCALFOLDER,
+                               EXPORT_DIR=cfg.EXPORT_PATH,
+                               merge_versions=cfg.MERGE_VERSIONS,
+                               EXPORT_CSV=cfg.EXPORT_AS_CSV,
+                               name="ParserXMLAuto")
+        parserxml_parallel.run(logger=logger, ret_params=ret_params)
+        # parserXML = ParserXML()
+        # parserXML.start() #this is a thread so we will call start method (not run)
 
 
     if cfg.EXPORT_FILES_FROM_MONGO == True:
