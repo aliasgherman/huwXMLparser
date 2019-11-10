@@ -8,7 +8,7 @@ DATE_TO_PROCESS = "20190522"  # If you want to use the latest DATES from the xml
 # set this to DATE_TO_PROCESS = ""
 
 #LOCALFOLDER is the folder where you want to download the FTP files, where you want to read the XML files FROM.
-LOCALFOLDER = "/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/oMIXEDSET/"  # This is the folder where you want the files to be read from.
+LOCALFOLDER = "/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/SMALLSET/"  # This is the folder where you want the files to be read from.
 
 #EXPORT_PATH is the folder where you want to export the results from the parsing. Also the results from Mongo exports if any
 EXPORT_PATH = "/home/aamhabiby/Desktop/resources/"  # This is the path where you want to export the CSV files
@@ -51,13 +51,13 @@ FOL_LIST = ["BTS3900", "BTS3900 LTE", "BTS5900 5G", "BTS5900 LTE", "PICO BTS3900
 
 #Step 3, Set to True if you want your script to Export the results as a DB file which can be opened easily using
 # SQL DB Explorer
-EXPORT_TO_SQLDB = True
+EXPORT_TO_SQLDB = False
 MERGE_VERSIONS = True #This will merge the different software versions into single file if Home object is the same. (
                       # like two RNCs with different versions will be combined in a single DB file and same CSV appended
-EXPORT_AS_CSV = True # It will export CSV files IF AND ONLY IF the Export to SQLDB is also selected. CSV will be simply
+EXPORT_AS_CSV = False # It will export CSV files IF AND ONLY IF the Export to SQLDB is also selected. CSV will be simply
                      # appended on one another so if for some reason the objects have different parameters
                      # then the file will be useless. SQL DB is still preferrable.
-EXPORT_TO_MONGO = False  # It is preferred to load all files in Mongo as you can then perform Consistency checks,
+EXPORT_TO_MONGO = True  # It is preferred to load all files in Mongo as you can then perform Consistency checks,
 # Parameter Change tracking etc etc
 
 ########################################################################################################################

@@ -39,7 +39,18 @@ if __name__ == "__main__":
                                EXPORT_CSV=cfg.EXPORT_AS_CSV,
                                name="ParserXMLAuto")
         parserxml_parallel.run(logger=logger, ret_params=ret_params)
-        # parserXML = ParserXML()
+        ##for small set, parallel was 22:30:42 till 22:34:01
+        ##for small set, no parallel was 22:37:49 till 22:45:05
+
+
+        # parserXML = ParserXML(CUSTOM_DATE_FILTER=todayDate,
+        #                         EXPORT_DB=cfg.EXPORT_TO_SQLDB,
+        #                         INSERT_MONGO=cfg.EXPORT_TO_MONGO,
+        #                         DUMPDIR=cfg.LOCALFOLDER,
+        #                         EXPORT_DIR=cfg.EXPORT_PATH,
+        #                         merge_versions=cfg.MERGE_VERSIONS,
+        #                         EXPORT_CSV=cfg.EXPORT_AS_CSV,
+        #                         name="ParserXMLAuto")
         # parserXML.start() #this is a thread so we will call start method (not run)
 
 

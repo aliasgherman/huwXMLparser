@@ -42,6 +42,11 @@ statusStr = "Idle"
 def initialize(logger, name, CUSTOM_DATE_FILTER="", EXPORT_DB=True, EXPORT_CSV=True, INSERT_MONGO=False,
              DUMPDIR="/home/aamhabiby/Desktop/resources/TEST/", EXPORT_DIR="/home/aamhabiby/Desktop/resources/",
              isZip=False, merge_versions=False):
+    if (EXPORT_CSV == True) or (EXPORT_DB == True):
+        logger.error("This is the parallel processing version and cannot perform csv writing or SQLLite writing due to file IO locks. Only insert to Mongo db can be done.")
+        assert True == False
+        return
+
     temp = datetime.now()
     ret_params = dict()
     ret_params["CUSTOM_DATE_FILTER"] = CUSTOM_DATE_FILTER
@@ -622,7 +627,7 @@ def df_to_mongo(logger, ret_params, dbname, collname, df, host="localhost", port
         data = df.to_dict(orient='records')
         collection.insert_many(data)
     except Exception as e:
-        logger.error("Exception occurred inserting data to Mongo db" + str(e))
+        logger.error("Exception occurred inserting data to Mongo db. " + str(e))
 
 def gunzip_all(logger, ret_params, dirName, dirFilter, fileFilter, extensionFilter, filterType="and"):
     try:
@@ -697,9 +702,9 @@ def getListOfFiles(logger, ret_params, dirName, dirFilter="", fileFilter="", ext
 #time.sleep(5)
 #print(a.status())
 
-logger = setupLogger()
-ret_params = initialize(logger=logger, name="CNAME", CUSTOM_DATE_FILTER="20190522", EXPORT_CSV=True, EXPORT_DB=True, merge_versions=True,
-              DUMPDIR="/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip",
-              EXPORT_DIR="/home/aamhabiby/Desktop/resources/")
-
-run(logger=logger, ret_params=ret_params)
+# logger = setupLogger()
+# ret_params = initialize(logger=logger, name="CNAME", CUSTOM_DATE_FILTER="20190522", EXPORT_CSV=True, EXPORT_DB=True, merge_versions=True,
+#               DUMPDIR="/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip",
+#               EXPORT_DIR="/home/aamhabiby/Desktop/resources/")
+#
+# run(logger=logger, ret_params=ret_params)
