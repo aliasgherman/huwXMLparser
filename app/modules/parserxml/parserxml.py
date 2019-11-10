@@ -338,6 +338,8 @@ class ParserXML(threading.Thread):
         except Exception as e:
             self.logger.error("An Exception occurred in the main export_all_tables function. " + str(e))
 
+
+
     def normalize(self, name):
         if name[0] == "{":
             uri, tag = name[1:].split("}")

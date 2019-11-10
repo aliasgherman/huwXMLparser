@@ -1,0 +1,123 @@
+[ 2019-11-10 20:29:41,039 ] [ PARSER_XML ][ INFO ] [CNAME] Initialized parameters are {'CUSTOM_DATE_FILTER': '20190522', 'name': 'CNAME', 'EXPORT_DB': True, 'INSERT_MONGO': False, 'DUMPDIR': '/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip', 'EXPORT_DIR': '/home/aamhabiby/Desktop/resources/20191110_2029', 'isZip': False, 'merge_versions': True, 'EXPORT_CSV': True}
+[ 2019-11-10 20:29:41,040 ] [ PARSER_XML ][ INFO ] This seems to be a zip file (either by explicit option) or by the directory name split. Trying to unzip first.
+[ 2019-11-10 20:29:45,474 ] [ PARSER_XML ][ INFO ] Extracted zip path is now : /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp
+[ 2019-11-10 20:29:45,475 ] [ PARSER_XML ][ WARNING ] Date filter is overridden. Will use this filter for directory. 20190522
+[ 2019-11-10 20:29:45,476 ] [ PARSER_XML ][ INFO ] Total files to be processed are : 6
+[ 2019-11-10 20:29:45,496 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163570/ALL_NOI6266_Al Wakrah Stadium_1556669685.xml.gz
+[ 2019-11-10 20:29:45,498 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/31264136/AUTOBAKDATA20190522030431/GNBCFG.XML.gz
+[ 2019-11-10 20:29:45,506 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_@OS1608_Umm-Salal-Muhammad_10.134.5.44_20150908030328.xml.gz
+[ 2019-11-10 20:29:45,525 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190501
+[ 2019-11-10 20:29:45,536 ] [ PARSER_XML ][ INFO ] NE Date found is : 20150908
+[ 2019-11-10 20:29:45,546 ] [ PARSER_XML ][ INFO ] NENAME found for this file is NDS1459_GTC-Camp
+[ 2019-11-10 20:29:45,557 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/3221290530/AUTOBAKDATA20190522030538/CFGDATA.XML.gz
+[ 2019-11-10 20:29:45,569 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190429
+[ 2019-11-10 20:29:45,580 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163562/ALL_LDS1028_QSTP_1556496952.xml.gz
+[ 2019-11-10 20:29:45,786 ] [ PARSER_XML ][ INFO ] NENAME found for this file is DS1593_Ind-Area-South-I
+[ 2019-11-10 20:29:45,833 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190429
+[ 2019-11-10 20:29:45,921 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190522
+[ 2019-11-10 20:29:49,875 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_RNCH01_10.200.172.158_20150805030457.xml.gz
+[ 2019-11-10 20:29:58,479 ] [ PARSER_XML ][ INFO ] NE Date found is : 20150805
+[ 2019-11-10 20:32:27,061 ] [ PARSER_XML ][ INFO ] [CNAME] Initialized parameters are {'CUSTOM_DATE_FILTER': '20190522', 'name': 'CNAME', 'EXPORT_DB': True, 'INSERT_MONGO': False, 'DUMPDIR': '/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip', 'EXPORT_DIR': '/home/aamhabiby/Desktop/resources/20191110_2032', 'isZip': False, 'merge_versions': True, 'EXPORT_CSV': True}
+[ 2019-11-10 20:32:27,061 ] [ PARSER_XML ][ INFO ] This seems to be a zip file (either by explicit option) or by the directory name split. Trying to unzip first.
+[ 2019-11-10 20:32:31,038 ] [ PARSER_XML ][ INFO ] Extracted zip path is now : /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp
+[ 2019-11-10 20:32:31,038 ] [ PARSER_XML ][ WARNING ] Date filter is overridden. Will use this filter for directory. 20190522
+[ 2019-11-10 20:32:31,040 ] [ PARSER_XML ][ INFO ] Total files to be processed are : 6
+[ 2019-11-10 20:32:31,057 ] [ PARSER_XML ][ ERROR ] An exception occurred while running the main run function. Exiting the thread now. Please make sure the delete the uploaded files and extracted files before next operation.
+[ 2019-11-10 20:32:44,773 ] [ PARSER_XML ][ INFO ] [CNAME] Initialized parameters are {'CUSTOM_DATE_FILTER': '20190522', 'name': 'CNAME', 'EXPORT_DB': True, 'INSERT_MONGO': False, 'DUMPDIR': '/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip', 'EXPORT_DIR': '/home/aamhabiby/Desktop/resources/20191110_2032', 'isZip': False, 'merge_versions': True, 'EXPORT_CSV': True}
+[ 2019-11-10 20:32:44,773 ] [ PARSER_XML ][ INFO ] This seems to be a zip file (either by explicit option) or by the directory name split. Trying to unzip first.
+[ 2019-11-10 20:32:48,920 ] [ PARSER_XML ][ INFO ] Extracted zip path is now : /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp
+[ 2019-11-10 20:32:48,920 ] [ PARSER_XML ][ WARNING ] Date filter is overridden. Will use this filter for directory. 20190522
+[ 2019-11-10 20:32:48,922 ] [ PARSER_XML ][ INFO ] Total files to be processed are : 6
+[ 2019-11-10 20:32:48,937 ] [ PARSER_XML ][ ERROR ] An exception occurred while running the main run function. Exiting the thread now. Please make sure the delete the uploaded files and extracted files before next operation.
+[ 2019-11-10 20:33:18,863 ] [ PARSER_XML ][ INFO ] [CNAME] Initialized parameters are {'CUSTOM_DATE_FILTER': '20190522', 'name': 'CNAME', 'EXPORT_DB': True, 'INSERT_MONGO': False, 'DUMPDIR': '/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip', 'EXPORT_DIR': '/home/aamhabiby/Desktop/resources/20191110_2033', 'isZip': False, 'merge_versions': True, 'EXPORT_CSV': True}
+[ 2019-11-10 20:33:18,864 ] [ PARSER_XML ][ INFO ] This seems to be a zip file (either by explicit option) or by the directory name split. Trying to unzip first.
+[ 2019-11-10 20:33:22,994 ] [ PARSER_XML ][ INFO ] Extracted zip path is now : /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp
+[ 2019-11-10 20:33:22,994 ] [ PARSER_XML ][ WARNING ] Date filter is overridden. Will use this filter for directory. 20190522
+[ 2019-11-10 20:33:22,996 ] [ PARSER_XML ][ INFO ] Total files to be processed are : 6
+[ 2019-11-10 20:33:23,010 ] [ PARSER_XML ][ ERROR ] An exception occurred while running the main run function. Exiting the thread now. Please make sure the delete the uploaded files and extracted files before next operation.
+[ 2019-11-10 20:34:29,214 ] [ PARSER_XML ][ INFO ] [CNAME] Initialized parameters are {'CUSTOM_DATE_FILTER': '20190522', 'name': 'CNAME', 'EXPORT_DB': True, 'INSERT_MONGO': False, 'DUMPDIR': '/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip', 'EXPORT_DIR': '/home/aamhabiby/Desktop/resources/20191110_2034', 'isZip': False, 'merge_versions': True, 'EXPORT_CSV': True}
+[ 2019-11-10 20:34:29,214 ] [ PARSER_XML ][ INFO ] This seems to be a zip file (either by explicit option) or by the directory name split. Trying to unzip first.
+[ 2019-11-10 20:34:32,969 ] [ PARSER_XML ][ INFO ] Extracted zip path is now : /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp
+[ 2019-11-10 20:34:32,970 ] [ PARSER_XML ][ WARNING ] Date filter is overridden. Will use this filter for directory. 20190522
+[ 2019-11-10 20:34:32,971 ] [ PARSER_XML ][ INFO ] Total files to be processed are : 6
+[ 2019-11-10 20:34:32,984 ] [ PARSER_XML ][ ERROR ] An exception occurred while running the main run function. Exiting the thread now. Please make sure the delete the uploaded files and extracted files before next operation.
+[ 2019-11-10 20:34:32,984 ] [ PARSER_XML ][ ERROR ] can only concatenate str (not "tuple") to str
+[ 2019-11-10 20:34:48,627 ] [ PARSER_XML ][ INFO ] [CNAME] Initialized parameters are {'CUSTOM_DATE_FILTER': '20190522', 'name': 'CNAME', 'EXPORT_DB': True, 'INSERT_MONGO': False, 'DUMPDIR': '/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip', 'EXPORT_DIR': '/home/aamhabiby/Desktop/resources/20191110_2034', 'isZip': False, 'merge_versions': True, 'EXPORT_CSV': True}
+[ 2019-11-10 20:34:48,627 ] [ PARSER_XML ][ INFO ] This seems to be a zip file (either by explicit option) or by the directory name split. Trying to unzip first.
+[ 2019-11-10 20:34:52,567 ] [ PARSER_XML ][ INFO ] Extracted zip path is now : /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp
+[ 2019-11-10 20:34:52,567 ] [ PARSER_XML ][ WARNING ] Date filter is overridden. Will use this filter for directory. 20190522
+[ 2019-11-10 20:34:52,568 ] [ PARSER_XML ][ INFO ] Total files to be processed are : 6
+[ 2019-11-10 20:34:52,582 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_@OS1608_Umm-Salal-Muhammad_10.134.5.44_20150908030328.xml.gz
+[ 2019-11-10 20:34:52,582 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163562/ALL_LDS1028_QSTP_1556496952.xml.gz
+[ 2019-11-10 20:34:52,582 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_RNCH01_10.200.172.158_20150805030457.xml.gz
+[ 2019-11-10 20:34:52,582 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163570/ALL_NOI6266_Al Wakrah Stadium_1556669685.xml.gz
+[ 2019-11-10 20:34:52,583 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/31264136/AUTOBAKDATA20190522030431/GNBCFG.XML.gz
+[ 2019-11-10 20:34:52,583 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/3221290530/AUTOBAKDATA20190522030538/CFGDATA.XML.gz
+[ 2019-11-10 20:34:52,590 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163570/ALL_NOI6266_Al Wakrah Stadium_1556669685.xml.gz
+[ 2019-11-10 20:34:52,591 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/31264136/AUTOBAKDATA20190522030431/GNBCFG.XML.gz
+[ 2019-11-10 20:34:52,602 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_@OS1608_Umm-Salal-Muhammad_10.134.5.44_20150908030328.xml.gz
+[ 2019-11-10 20:34:52,614 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190501
+[ 2019-11-10 20:34:52,629 ] [ PARSER_XML ][ INFO ] NE Date found is : 20150908
+[ 2019-11-10 20:34:52,642 ] [ PARSER_XML ][ INFO ] NENAME found for this file is NDS1459_GTC-Camp
+[ 2019-11-10 20:34:52,649 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/3221290530/AUTOBAKDATA20190522030538/CFGDATA.XML.gz
+[ 2019-11-10 20:34:52,672 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163562/ALL_LDS1028_QSTP_1556496952.xml.gz
+[ 2019-11-10 20:34:52,680 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190429
+[ 2019-11-10 20:34:52,851 ] [ PARSER_XML ][ INFO ] NENAME found for this file is DS1593_Ind-Area-South-I
+[ 2019-11-10 20:34:52,890 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190429
+[ 2019-11-10 20:34:52,983 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190522
+[ 2019-11-10 20:34:56,454 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_RNCH01_10.200.172.158_20150805030457.xml.gz
+[ 2019-11-10 20:35:03,204 ] [ PARSER_XML ][ INFO ] NE Date found is : 20150805
+[ 2019-11-10 20:36:16,318 ] [ PARSER_XML ][ INFO ] Will now remove the processed directory as we believe it was a result of ZIP file extraction.
+[ 2019-11-10 20:56:56,372 ] [ PARSER_XML ][ INFO ] [CNAME] Initialized parameters are {'CUSTOM_DATE_FILTER': '20190522', 'name': 'CNAME', 'EXPORT_DB': True, 'INSERT_MONGO': False, 'DUMPDIR': '/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip', 'EXPORT_DIR': '/home/aamhabiby/Desktop/resources/20191110_2056', 'isZip': False, 'merge_versions': True, 'EXPORT_CSV': True}
+[ 2019-11-10 20:56:56,373 ] [ PARSER_XML ][ INFO ] This seems to be a zip file (either by explicit option) or by the directory name split. Trying to unzip first.
+[ 2019-11-10 20:57:00,105 ] [ PARSER_XML ][ INFO ] Extracted zip path is now : /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp
+[ 2019-11-10 20:57:00,106 ] [ PARSER_XML ][ WARNING ] Date filter is overridden. Will use this filter for directory. 20190522
+[ 2019-11-10 20:57:00,107 ] [ PARSER_XML ][ INFO ] Total files to be processed are : 6
+[ 2019-11-10 20:57:00,117 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_@OS1608_Umm-Salal-Muhammad_10.134.5.44_20150908030328.xml.gz
+[ 2019-11-10 20:57:00,118 ] [ PARSER_XML ][ INFO ] Processing file number (000/006)
+[ 2019-11-10 20:57:00,134 ] [ PARSER_XML ][ INFO ] NE Date found is : 20150908
+[ 2019-11-10 20:57:24,009 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_RNCH01_10.200.172.158_20150805030457.xml.gz
+[ 2019-11-10 20:57:24,021 ] [ PARSER_XML ][ INFO ] Processing file number (001/006)
+[ 2019-11-10 20:57:31,369 ] [ PARSER_XML ][ INFO ] NE Date found is : 20150805
+[ 2019-11-10 20:58:24,015 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163562/ALL_LDS1028_QSTP_1556496952.xml.gz
+[ 2019-11-10 20:58:24,015 ] [ PARSER_XML ][ INFO ] Processing file number (002/006)
+[ 2019-11-10 20:58:24,178 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190429
+[ 2019-11-10 20:58:49,163 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163570/ALL_NOI6266_Al Wakrah Stadium_1556669685.xml.gz
+[ 2019-11-10 20:58:49,163 ] [ PARSER_XML ][ INFO ] Processing file number (003/006)
+[ 2019-11-10 20:58:49,180 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190501
+[ 2019-11-10 20:58:59,546 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/31264136/AUTOBAKDATA20190522030431/GNBCFG.XML.gz
+[ 2019-11-10 20:58:59,547 ] [ PARSER_XML ][ INFO ] Processing file number (004/006)
+[ 2019-11-10 20:58:59,577 ] [ PARSER_XML ][ INFO ] NENAME found for this file is NDS1459_GTC-Camp
+[ 2019-11-10 20:58:59,600 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190429
+[ 2019-11-10 20:59:18,874 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/3221290530/AUTOBAKDATA20190522030538/CFGDATA.XML.gz
+[ 2019-11-10 20:59:18,875 ] [ PARSER_XML ][ INFO ] Processing file number (005/006)
+[ 2019-11-10 20:59:19,033 ] [ PARSER_XML ][ INFO ] NENAME found for this file is DS1593_Ind-Area-South-I
+[ 2019-11-10 20:59:19,155 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190522
+[ 2019-11-10 21:00:08,617 ] [ PARSER_XML ][ INFO ] Will now remove the processed directory as we believe it was a result of ZIP file extraction.
+[ 2019-11-10 21:01:35,829 ] [ PARSER_XML ][ INFO ] [CNAME] Initialized parameters are {'CUSTOM_DATE_FILTER': '20190522', 'name': 'CNAME', 'EXPORT_DB': True, 'INSERT_MONGO': False, 'DUMPDIR': '/media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/MIXEDSET.zip', 'EXPORT_DIR': '/home/aamhabiby/Desktop/resources/20191110_2101', 'isZip': False, 'merge_versions': True, 'EXPORT_CSV': True}
+[ 2019-11-10 21:01:35,830 ] [ PARSER_XML ][ INFO ] This seems to be a zip file (either by explicit option) or by the directory name split. Trying to unzip first.
+[ 2019-11-10 21:01:39,493 ] [ PARSER_XML ][ INFO ] Extracted zip path is now : /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp
+[ 2019-11-10 21:01:39,493 ] [ PARSER_XML ][ WARNING ] Date filter is overridden. Will use this filter for directory. 20190522
+[ 2019-11-10 21:01:39,495 ] [ PARSER_XML ][ INFO ] Total files to be processed are : 6
+[ 2019-11-10 21:01:39,506 ] [ PARSER_XML ][ INFO ] Total available processors are  : 8
+[ 2019-11-10 21:01:39,507 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_@OS1608_Umm-Salal-Muhammad_10.134.5.44_20150908030328.xml.gz
+[ 2019-11-10 21:01:39,507 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_RNCH01_10.200.172.158_20150805030457.xml.gz
+[ 2019-11-10 21:01:39,507 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163562/ALL_LDS1028_QSTP_1556496952.xml.gz
+[ 2019-11-10 21:01:39,508 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163570/ALL_NOI6266_Al Wakrah Stadium_1556669685.xml.gz
+[ 2019-11-10 21:01:39,508 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/31264136/AUTOBAKDATA20190522030431/GNBCFG.XML.gz
+[ 2019-11-10 21:01:39,508 ] [ PARSER_XML ][ INFO ] Processing file index /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/3221290530/AUTOBAKDATA20190522030538/CFGDATA.XML.gz
+[ 2019-11-10 21:01:39,515 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163570/ALL_NOI6266_Al Wakrah Stadium_1556669685.xml.gz
+[ 2019-11-10 21:01:39,515 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/31264136/AUTOBAKDATA20190522030431/GNBCFG.XML.gz
+[ 2019-11-10 21:01:39,526 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_@OS1608_Umm-Salal-Muhammad_10.134.5.44_20150908030328.xml.gz
+[ 2019-11-10 21:01:39,536 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190501
+[ 2019-11-10 21:01:39,558 ] [ PARSER_XML ][ INFO ] NE Date found is : 20150908
+[ 2019-11-10 21:01:39,568 ] [ PARSER_XML ][ INFO ] NENAME found for this file is NDS1459_GTC-Camp
+[ 2019-11-10 21:01:39,576 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/3221290530/AUTOBAKDATA20190522030538/CFGDATA.XML.gz
+[ 2019-11-10 21:01:39,608 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190429
+[ 2019-11-10 21:01:39,611 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/NE163562/ALL_LDS1028_QSTP_1556496952.xml.gz
+[ 2019-11-10 21:01:39,779 ] [ PARSER_XML ][ INFO ] NENAME found for this file is DS1593_Ind-Area-South-I
+[ 2019-11-10 21:01:39,816 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190429
+[ 2019-11-10 21:01:39,906 ] [ PARSER_XML ][ INFO ] NE Date found is : 20190522
+[ 2019-11-10 21:01:43,329 ] [ PARSER_XML ][ INFO ] Extracted a gz file /media/windows/AAM/windows/Shared_Win_Ubuntu/lubuntu_backup/Desktop/resources/tmp/MIXEDSET/20190522/GExport_RNCH01_10.200.172.158_20150805030457.xml.gz
+[ 2019-11-10 21:01:51,550 ] [ PARSER_XML ][ INFO ] NE Date found is : 20150805
+[ 2019-11-10 21:03:03,698 ] [ PARSER_XML ][ INFO ] Will now remove the processed directory as we believe it was a result of ZIP file extraction.
