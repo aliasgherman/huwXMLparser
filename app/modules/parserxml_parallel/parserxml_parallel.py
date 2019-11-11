@@ -1,4 +1,5 @@
 import threading
+import PySimpleGUI as sg
 import gc
 import shutil
 import gzip
@@ -710,3 +711,20 @@ def getListOfFiles(logger, ret_params, dirName, dirFilter="", fileFilter="", ext
 #               EXPORT_DIR="/home/aamhabiby/Desktop/resources/")
 #
 # run(logger=logger, ret_params=ret_params)
+
+
+
+# layout = [
+#     [sg.FileBrowse()],
+#     [sg.Radio('A radio group',1,False,False)],
+#     [sg.Radio('A radio group 2',1,False,False)],
+#     [sg.Radio('A radio group 3',1,True,False)]
+#     ]
+# window = sg.Window('Testing GUI for Parallel Processor', layout)
+#
+# while True:
+#     event, values = window.Read()
+#     print(event, values)
+#     if event in (None, 'Cancel'):
+#         break
+# window.Close()
