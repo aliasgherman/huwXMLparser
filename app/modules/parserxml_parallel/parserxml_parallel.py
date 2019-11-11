@@ -540,8 +540,8 @@ def run(logger, ret_params):
         #processedFiles = 0
         logger.info("Total files to be processed are : " + str(totalFiles))
 
-        pool = mp.Pool(mp.cpu_count())
-        logger.info("Total available processors are  : " + str(mp.cpu_count()))
+        pool = mp.Pool(int(mp.cpu_count() * 0.8))
+        logger.info("Total available processors are  : " + str(int(mp.cpu_count() * 0.8)))
         pool.starmap(proc_single_file, [(logger, ret_params, x) for x in totFiles])
         pool.close()
 # mp time for MIXEDSET was 20:34:48 till 20:36:16
@@ -622,12 +622,14 @@ def un_gzip(logger, ret_params, filename):
 def df_to_mongo(logger, ret_params, dbname, collname, df, host="localhost", port=27017):
     try:
         client = MongoClient(host, port)
-        db = client[dbname]
-        collection = db[collname]
-        data = df.to_dict(orient='records')
-        collection.insert_many(data)
+        with client:
+            db = client[dbname]
+            collection = db[collname]
+            data = df.to_dict(orient='records')
+            collection.insert_many(data)
     except Exception as e:
         logger.error("Exception occurred inserting data to Mongo db. " + str(e))
+        assert False #as we are not able to insert data, lets not ruin the upcoming files.
 
 def gunzip_all(logger, ret_params, dirName, dirFilter, fileFilter, extensionFilter, filterType="and"):
     try:
